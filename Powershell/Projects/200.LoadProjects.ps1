@@ -1,7 +1,7 @@
-# Dll laden
+# Create client instance and login
 $apiClient = & "$PSScriptRoot\..\ImportAndLogin.ps1"
 
-# Abfrage
+# Create request parameter
 $content = New-Object Collections.Generic.List[EAS.LeegooBuilder.Web.Contracts.Models.ParameterClasses.ProjectServiceWeb.GetProjectsContent]
 $content.Add([EAS.LeegooBuilder.Web.Contracts.Models.ParameterClasses.ProjectServiceWeb.GetProjectsContent]::All)
 
@@ -12,9 +12,10 @@ $paramter = New-Object EAS.LeegooBuilder.Web.Contracts.Models.ParameterClasses.P
 $paramter.LoadOptions = $loadOptions
 $paramter.ProjectsContent = $content
 
+# Execute API function
 $result = $apiClient.ProjectService.GetProjects($paramter)
 
-# Ausgabe
+# Show some output
 if ($result.OperationResult.Successful) {
     foreach ($project in $result.Projects) {
         Write-Output "$($project.ProjectID) - $($project.Description) - $($project.Note)"
