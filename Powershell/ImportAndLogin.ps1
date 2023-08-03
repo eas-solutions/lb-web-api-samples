@@ -1,8 +1,10 @@
 # Load Client DLL
-Add-Type -Path "$PSScriptRoot\..\bin\EAS.LeegooBuilder.Web.WebApiClient.dll" -IgnoreWarnings
+Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Web.WebApiClient.dll" -IgnoreWarnings
+Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Common.DataTransferObjects.dll" -IgnoreWarnings
+
 
 # !!! Change Here !!!
-$apiUrl = "http://avalon.eas-cpq.de:56540/api/"
+$apiUrl = "http://localhost:56540/api/"
 $username = "Administrator"
 $password = "admin"
 $culture = "de-DE"
@@ -13,22 +15,23 @@ $uri = New-Object System.Uri -arg $apiUrl
 $apiClient = New-Object EAS.LeegooBuilder.Web.WebApiClient.WebApiClient -arg $uri
 
 # Create Login Parameter
-$loginParameter = New-Object EAS.LeegooBuilder.Web.Contracts.Models.ParameterClasses.UserServiceWeb.LoginParameter
+$loginParameter = New-Object EAS.LeegooBuilder.Web.Contracts.Models.ParameterClasses.Authentication.LoginParameter
 $loginParameter.Username = $username
 $loginParameter.Password = $password
 $loginParameter.Culture = $culture
 $loginParameter.Language = $language
 
 # Execute Login
-$loginResult = $apiClient.LogIn($loginParameter)
+$authClient = $apiClient.AuthenticationClient
+$loginResult = $authClient.LoginAsync($loginParameter).GetAwaiter().GetResult()
 
 # Validate Result
 if ($loginResult.OperationResult.Successful) {
-    Write-Output "Login successful"
+    Write-Debug "Login successful"
 }else {
     Write-Output "Login not successful:"
     Write-Output $loginResult.OperationResult.ShortMessage
 }
 
 # Return Client Instance
-return $apiClient
+Write-Output $apiClient
