@@ -1,14 +1,15 @@
-# Load Client DLL
+# Load Client DLL (Change Path to your DLL Path)
 Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Web.WebApiClient.dll" -IgnoreWarnings
 Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Common.DataTransferObjects.dll" -IgnoreWarnings
 
 
-# !!! Change Here !!!
+# !!! Change login settings !!!
 $apiUrl = "http://localhost:56540/api/"
 $username = "Administrator"
 $password = "admin"
 $culture = "de-DE"
 $language = "de"
+
 
 # Create Client Instance
 $uri = New-Object System.Uri -arg $apiUrl
