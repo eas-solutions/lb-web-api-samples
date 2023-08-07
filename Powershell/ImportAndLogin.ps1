@@ -29,8 +29,9 @@ $loginResult = $authClient.LoginAsync($loginParameter).GetAwaiter().GetResult()
 if ($loginResult.OperationResult.Successful) {
     Write-Debug "Login successful"
 }else {
-    Write-Output "Login not successful:"
-    Write-Output $loginResult.OperationResult.ShortMessage
+    Write-Debug "Login not successful:"
+    Write-Debug $loginResult.OperationResult.ShortMessage
+    throw "Login not successful"
 }
 
 # Return Client Instance
