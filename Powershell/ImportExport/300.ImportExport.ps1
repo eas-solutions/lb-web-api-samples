@@ -9,7 +9,6 @@ $paramter.ProjectsContent = $projectContentParameter
 $paramter.LoadOptions = [EAS.LeegooBuilder.Web.Contracts.Models.Enums.ProjectLoadType]::AllProjects
 $result = $apiClient.ProjectClient.GetProjectsAsync($paramter).GetAwaiter().GetResult()
 
-# Show some output
 if (!$result.OperationResult.Successful) {
     Write-Output $result.OperationResult.ShortMessage
     Exit
@@ -30,7 +29,6 @@ $loadOptions.Add([EAS.LeegooBuilder.Web.Contracts.Models.Enums.ProposalLoadType]
 $proposalParamter.LoadOptions = $loadOptions
 $proposalResult = $apiClient.ProposalClient.GetProposalsAsync($proposalParamter).GetAwaiter().GetResult()
 
-# Show some output
 if (!$proposalResult.OperationResult.Successful) {
     Write-Output $proposalResult.OperationResult.DetailedMessage
     Exit
@@ -80,7 +78,6 @@ $exportProposalByIdParamter.ProjectIds.Add($project.InternalProjectID)
 $exportProposalByIdParamter.AddBaseData = $true
 $exportProjectResult = $apiClient.ImportExportClient.ExportProposalsByProjectIdAsync($exportProposalByIdParamter).GetAwaiter().GetResult()
 
-# Show some output
 if (!$exportProjectResult.OperationResult.Successful) {
     Write-Output $exportProjectResult.OperationResult.DetailedMessage
     Exit
