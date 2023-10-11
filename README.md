@@ -16,3 +16,7 @@ The powershell examples are designed to look at the folder `bin` in the reposito
 ### ImportAndLogin.ps1
 This script loads the client Dll´s and connects to the api. Additionaly you need to specify the access data in this file. 
 
+
+## Documentation
+
+[LEEGOO BUILDER G3 Web Api](https://wiki.eas-cpq.de/de/leegooweb/public/web-api)
