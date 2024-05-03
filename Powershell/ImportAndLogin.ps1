@@ -1,6 +1,7 @@
 # Load Client DLL (Change Path to your DLL Path)
-Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Web.WebApiClient.dll" -IgnoreWarnings
-Add-Type -Path "D:\Quelltexte\EAS-Gitea\LeegooBuilderWeb-API-Samples\bin\EAS.LeegooBuilder.Common.DataTransferObjects.dll" -IgnoreWarnings
+Add-Type -Path "C:\Quelltexte\Gitea\LeegooBuilderWeb\Bin\Client\EAS.DataTransfer.dll"
+Add-Type -Path "C:\Quelltexte\Gitea\LeegooBuilderWeb\Bin\Client\EAS.LeegooBuilder.Web.WebApiClient.dll" -IgnoreWarnings
+Add-Type -Path "C:\Quelltexte\Gitea\LeegooBuilderWeb\Bin\Client\EAS.LeegooBuilder.Common.DataTransferObjects.dll" -IgnoreWarnings
 
 
 # !!! Change login settings !!!
@@ -8,7 +9,7 @@ $apiUrl = "http://localhost:56540/api/"
 $username = "Administrator"
 $password = "admin"
 $culture = "de-DE"
-$language = "de"
+$language = "de-DE"
 
 
 # Create Client Instance

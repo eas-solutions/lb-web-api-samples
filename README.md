@@ -11,6 +11,11 @@ The easies way to try out the powershell excamples is [Visual Studio Code](https
 ## Preperations
 The powershell examples are designed to look at the folder `bin` in the repository root for the LEEGOO BUILDER Api Client DLL´s. So you have to copy the client with all the dependencies in this folder before trying out the samples.
 
+The following libraries are used in these examples:
+- `EAS.LeegooBuilder.Web.WebApiClient.dll`
+- `EAS.LeegooBuilder.Common.DataTransferObjects.dll`
+- `EAS.DataTransfer.dll`
+
 ## Structure
 
 ### ImportAndLogin.ps1
