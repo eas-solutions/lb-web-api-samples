@@ -1,0 +1,3 @@
+[submodule "lb-web"]
+	path = lb-web
+	url = git@github-eas:eas-solutions/lb-web.git
