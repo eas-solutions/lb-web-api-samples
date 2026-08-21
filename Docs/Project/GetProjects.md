@@ -22,12 +22,11 @@ curl --request POST "${BASE_URL}/api/Project/GetProjects" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
 	--data '{
-		"ProjectsContent": ["Projects"],
-		"LoadOptions": ["AllProjects"]
+		"ProjectsContent": ["Projects"]
 	}'
 ```
 
-`ProjectsContent` is required. `LoadOptions` is included here to make the intended scope explicit.
+`ProjectsContent` is the only required request property.
 
 ## Common grid request
 
@@ -44,11 +43,7 @@ curl --request POST "${BASE_URL}/api/Project/GetProjects" \
 			"PersonsAndCompanies",
 			"IsFavorite"
 		],
-		"LoadOptions": ["AllProjects"],
-		"ReplaceCustomOverwriteColumns": true,
-		"ReplaceSyscodesWithValues": true,
 		"QuerySettings": {
-			"Skip": 0,
 			"Take": 50
 		}
 	}'
@@ -63,12 +58,12 @@ The properties used by the common grid request are listed first. Property names 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `ProjectsContent` | `GetProjectsContent[]` | Yes | Selects which response data to populate. The examples request `Projects`, `CustomDefinitionValues`, `PersonsAndCompanies`, and `IsFavorite`. |
-| `LoadOptions` | `ProjectLoadType[]` | No | Restricts the project scope. `AllProjects` is the usual choice for a complete accessible-project list. |
-| `ReplaceCustomOverwriteColumns` | `boolean` | No | Replaces custom override columns with typed values when `true`. |
-| `ReplaceSyscodesWithValues` | `boolean` | No | Replaces system-code identifiers with their values when `true`. |
 | `QuerySettings` | `QuerySettings` | No | Controls paging (`Skip`, `Take`) and can also control sorting, filtering, selected properties, and distinct results. |
-| `Language` | `string` | No | Language used for localized project-list data. |
 | `SchemaName` | `string` | No | System-view schema to use instead of the authenticated user's active schema. |
+| `Language` | `string` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
+| `LoadOptions` | `ProjectLoadType[]` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
+| `ReplaceCustomOverwriteColumns` | `boolean` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
+| `ReplaceSyscodesWithValues` | `boolean` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
 
 ### Content selection
 
@@ -87,7 +82,7 @@ Choose only the `ProjectsContent` values needed by the caller:
 | `SysCodes` | Localized system-code values in `SysCodes`. |
 | `All` | Every content type. Prefer an explicit, smaller list for normal application requests. |
 
-`LoadOptions` accepts `AllProjects`, `OwnProjects`, `OwnBusifieldProjects`, `OwnSupplierProjects`, `OwnUserGroupProjects`, and `OwnUserGroupProjectsRegardingOwner`.
+`LoadOptions` accepts `AllProjects`, `OwnProjects`, `OwnBusifieldProjects`, `OwnSupplierProjects`, `OwnUserGroupProjects`, and `OwnUserGroupProjectsRegardingOwner`, but these values currently have no effect in this endpoint.
 
 ## Response and errors
 
