@@ -9,47 +9,56 @@
 | Method | `POST` |
 | URL | `/api/Project/GetProjects` |
 | Body | JSON `GetProjectsParameter` object |
+| Response | Protocol Buffers (`application/x-protobuf`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
-Set `BASE_URL` to your API address and `ACCESS_TOKEN` to a valid access token before running the examples.
+Set `ACCESS_TOKEN` to a valid access token before running the examples. The localhost URL is suitable only for development.
 
 ## Minimum request
 
 This returns project objects for all projects the current user can access.
 
 ```bash
-curl --request POST "${BASE_URL}/api/Project/GetProjects" \
+curl --request POST "http://localhost:56540/api/Project/GetProjects" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
+	--header "Accept: application/x-protobuf" \
 	--data '{
-		"ProjectsContent": ["Projects"]
-	}'
+		"ProjectsContent": [10]
+	}' \
+	--output get-projects-minimum.pb
 ```
 
-`ProjectsContent` is the only required request property.
+`ProjectsContent` is the only required request property. Raw JSON requests must use the numeric enum values; `10` means `Projects`.
+
+Live validation returned HTTP `200` with content type `application/x-protobuf`. Decoding the response with the API contract confirmed a successful operation and 3 project records. The response contained top-level `OperationResult`, `Projects`, and `QueryInfo` fields.
 
 ## Common grid request
 
 The project grid in the frontend uses this shape. It requests the project list, custom field values, related person/company data, favorite status, and a page of results.
 
 ```bash
-curl --request POST "${BASE_URL}/api/Project/GetProjects" \
+curl --request POST "http://localhost:56540/api/Project/GetProjects" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
+	--header "Accept: application/x-protobuf" \
 	--data '{
 		"ProjectsContent": [
-			"Projects",
-			"CustomDefinitionValues",
-			"PersonsAndCompanies",
-			"IsFavorite"
+			10,
+			30,
+			60,
+			80
 		],
 		"QuerySettings": {
 			"Take": 50
 		}
-	}'
+	}' \
+	--output get-projects-common.pb
 ```
 
 Use `Skip` and `Take` to page through the result set. `QuerySettings` also supports sorting and filtering; use the query model supplied by your API client when those are needed.
+
+Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded response reported a successful operation, 3 returned projects, `QueryInfo.RecordsTotal` equal to `3`, and custom-definition entries for all 3 projects. Project identifiers, project data, related person/company data, and custom values were not included in this guide.
 
 ## Request properties
 
@@ -57,7 +66,7 @@ The properties used by the common grid request are listed first. Property names 
 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
-| `ProjectsContent` | `GetProjectsContent[]` | Yes | Selects which response data to populate. The examples request `Projects`, `CustomDefinitionValues`, `PersonsAndCompanies`, and `IsFavorite`. |
+| `ProjectsContent` | `GetProjectsContent[]` | Yes | Selects which response data to populate. Raw JSON uses the numeric values shown below. |
 | `QuerySettings` | `QuerySettings` | No | Controls paging (`Skip`, `Take`) and can also control sorting, filtering, selected properties, and distinct results. |
 | `SchemaName` | `string` | No | System-view schema to use instead of the authenticated user's active schema. |
 | `Language` | `string` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
@@ -69,52 +78,35 @@ The properties used by the common grid request are listed first. Property names 
 
 Choose only the `ProjectsContent` values needed by the caller:
 
-| Value | Use when you need |
-| --- | --- |
-| `Projects` | Project objects in `Projects`. |
-| `CustomDefinitionValues` | Custom field values, returned in `CustomDefinitionValues` and keyed by internal project ID. Request this together with `Projects`. |
-| `PersonsAndCompanies` | Related person and company data for project fields. |
-| `IsFavorite` | Favorite status for the returned projects. |
-| `UserSettings` | The current user's saved grid layout in `Layout`. |
-| `SystemViews` | Full project-grid column metadata in `ViewData`. |
-| `BasicColumDefinitions` | Lightweight column metadata in `BasicColumDefinitions`. The API contract uses this spelling. |
-| `TableData` | DevExpress grid table JSON in `Data`. |
-| `SysCodes` | Localized system-code values in `SysCodes`. |
-| `All` | Every content type. Prefer an explicit, smaller list for normal application requests. |
+| Value | JSON value | Use when you need |
+| --- | --- | --- |
+| `Projects` | `10` | Project objects in `Projects`. |
+| `UserSettings` | `20` | The current user's saved grid layout in `Layout`. |
+| `CustomDefinitionValues` | `30` | Custom field values, returned in `CustomDefinitionValues` and keyed by internal project ID. Request this together with `Projects`. |
+| `SystemViews` | `40` | Full project-grid column metadata in `ViewData`. |
+| `BasicColumDefinitions` | `45` | Lightweight column metadata in `BasicColumDefinitions`. The API contract uses this spelling. |
+| `TableData` | `50` | DevExpress grid table JSON in `Data`. The current endpoint implementation does not populate this response property. |
+| `PersonsAndCompanies` | `60` | Related person and company data for project fields. |
+| `SysCodes` | `70` | Localized system-code values in `SysCodes`. |
+| `IsFavorite` | `80` | Favorite status for the returned projects. |
+| `All` | `0` | Every content type. Prefer an explicit, smaller list for normal application requests. |
 
 `LoadOptions` accepts `AllProjects`, `OwnProjects`, `OwnBusifieldProjects`, `OwnSupplierProjects`, `OwnUserGroupProjects`, and `OwnUserGroupProjectsRegardingOwner`, but these values currently have no effect in this endpoint.
 
-## Response and errors
+## Response
 
-Every response contains `OperationResult`. Check `OperationResult.Successful` before using the requested data. On failure, use `OperationResult.ShortMessage` to show or log the reason.
+The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which requests `application/x-protobuf` and deserializes `GetProjectsReturnParameter`.
 
-The response shape varies with `ProjectsContent`. A successful common-grid response is abbreviated below; project fields depend on the installation's project schema.
+After deserialization, check `OperationResult.Successful` before using the requested data. On failure, use `OperationResult.ShortMessage` to show or log the reason. The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.
 
-```json
-{
-	"OperationResult": {
-		"Successful": true
-	},
-	"Projects": [
-		{
-			"ProjectID": "P-1001"
-		}
-	],
-	"CustomDefinitionValues": {
-		"project-internal-id": {
-			"CustomFieldName": "Value"
-		}
-	},
-	"QueryInfo": {
-		"RecordsTotal": 125
-	}
-}
-```
+Requesting `application/json` currently returns HTTP `500` for both examples because the server detects a JSON property-name collision in the project entity graph. Do not omit the protobuf `Accept` header until that server-side serialization issue is fixed.
+
+For paged requests, read `QueryInfo.RecordsTotal` after protobuf deserialization to determine the total number of matching projects.
+
+## Errors
 
 | Situation | Response behavior |
 | --- | --- |
 | `ProjectsContent` is missing or `null` | `OperationResult.Successful` is `false` and `ShortMessage` is `Project content is null, please select a response content`. |
 | `SchemaName` does not exist | `OperationResult.Successful` is `false` and `ShortMessage` is `Schema does not exist`. |
 | Request validation or processing fails | `OperationResult.Successful` is `false`; inspect `ShortMessage` for the available error detail. |
-
-For paged requests, read `QueryInfo.RecordsTotal` to determine the total number of matching projects.
