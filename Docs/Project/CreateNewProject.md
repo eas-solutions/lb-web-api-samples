@@ -11,33 +11,60 @@ For the usual create-and-edit workflow, request an unsaved draft, let the user e
 | Method | `POST` |
 | URL | `/api/Project/CreateNewProject` |
 | Body | JSON `CreateNewProjectParameter` object |
+| Response | Protocol Buffers (`application/x-protobuf`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
-Set `BASE_URL` to your API address and `ACCESS_TOKEN` to a valid access token before running the examples.
+Set `ACCESS_TOKEN` to a valid access token before running the examples. The localhost URL is suitable only for development.
 
 ## Minimum request
 
 This initializes a project without saving it. All request properties have usable defaults, so an empty JSON object is sufficient.
 
 ```bash
-curl --request POST "${BASE_URL}/api/Project/CreateNewProject" \
+curl --request POST "http://localhost:56540/api/Project/CreateNewProject" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--data '{}'
+	--header "Accept: application/x-protobuf" \
+	--data '{}' \
+	--output create-new-project-minimum.pb
 ```
+
+Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded operation was successful and returned an initialized draft with non-empty generated `InternalProjectID` and `ProjectID` values. No custom-definition entries were configured in the test installation.
 
 ## Common editor request
 
 The frontend starts with an unsaved project and requests related company and person data for its editor. It relies on the default `false` value of `SaveCreatedProjectInDatabase`.
 
 ```bash
-curl --request POST "${BASE_URL}/api/Project/CreateNewProject" \
+curl --request POST "http://localhost:56540/api/Project/CreateNewProject" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
+	--header "Accept: application/x-protobuf" \
 	--data '{
 		"IncludeCompaniesAndPersons": true
-	}'
+	}' \
+	--output create-new-project-common.pb
 ```
+
+Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded operation was successful and returned an initialized draft with non-empty generated identifiers. No custom-definition entries were configured in the test installation.
+
+## Create and save immediately
+
+Set `SaveCreatedProjectInDatabase` to `true` when the initialized project should be persisted by this endpoint instead of returned as an unsaved draft. `ProjectName` sets the initial description. The configured generation script still determines the returned `ProjectID`.
+
+```bash
+curl --request POST "http://localhost:56540/api/Project/CreateNewProject" \
+	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
+	--header "Content-Type: application/json" \
+	--header "Accept: application/x-protobuf" \
+	--data '{
+		"ProjectName": "API documentation validation",
+		"SaveCreatedProjectInDatabase": true
+	}' \
+	--output create-new-project-saved.pb
+```
+
+Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded operation was successful and returned non-empty generated identifiers. A follow-up `GetProject` returned HTTP `200`, reported success, and returned the same internal ID, confirming that the project was persisted. The temporary validation project was then deleted; `GetProjects` returned HTTP `200` and confirmed that it was no longer listed.
 
 ## Request properties
 
@@ -48,21 +75,36 @@ curl --request POST "${BASE_URL}/api/Project/CreateNewProject" \
 | `ProjectName` | `string` | No | Initial project description. It can be changed before saving an unsaved project. |
 | `ProjectId` | `string` | No | Initial human-readable project ID. The configured generation script subsequently replaces it, so callers should normally omit it. |
 
-## Response and errors
+## Response
 
-Always check `OperationResult.Successful`. On success, `Project` contains the initialized project, its generated `ProjectID`, its new `InternalProjectID`, and loaded custom definitions.
+The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which deserializes `CreateNewProjectReturnParameter`.
+
+After deserialization, check `OperationResult.Successful`. On success, `Project` contains the initialized project, its generated `ProjectID`, its new `InternalProjectID`, and loaded custom definitions.
+
+The abbreviated object below represents the decoded common response from the live test. It is not the raw HTTP body; the raw body is protobuf. Generated identifiers, remaining project fields, and related data are redacted.
 
 ```json
 {
 	"OperationResult": {
+		"DetailedMessage": null,
+		"OperationFailType": 0,
+		"ShortMessage": null,
 		"Successful": true
 	},
 	"Project": {
-		"InternalProjectID": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
-		"ProjectID": "P-1001"
+		"InternalProjectID": "<redacted generated internal project ID>",
+		"ProjectID": "<redacted generated project ID>"
 	}
 }
 ```
+
+Requesting a JSON response currently returns HTTP `500` for these examples because the server detects a JSON property-name collision in the project entity graph. Do not omit the protobuf `Accept` header until that server-side serialization issue is fixed.
+
+## Follow-up validation
+
+The common response was initially confirmed to be unsaved: `GetProject` returned HTTP `200` with an unsuccessful operation for its generated internal ID. The complete initialized draft was then serialized as a protobuf `SaveProjectParameter` with `Type: CreateNew`; `SaveProject` returned HTTP `200` with a successful operation. A second `GetProject` returned HTTP `200`, reported success, and returned the same internal ID. The temporary project was deleted after validation, and a final `GetProject` confirmed that it no longer existed.
+
+## Errors
 
 | Situation | Response behavior |
 | --- | --- |
@@ -70,4 +112,4 @@ Always check `OperationResult.Successful`. On success, `Project` contains the in
 | Related company/person loading fails | `OperationResult.Successful` is `false`; inspect `ShortMessage`. |
 | Custom definition loading fails | `OperationResult.Successful` is `false`; inspect `ShortMessage`. |
 
-When `SaveCreatedProjectInDatabase` is `false`, the returned project is not persisted. Send the returned project to `SaveProject` with `Type: "CreateNew"` after editing.
+When `SaveCreatedProjectInDatabase` is `false`, the returned project is not persisted. Send the complete returned project and its complete custom-definition dictionary to `SaveProject` with `Type: CreateNew` after editing. Use protobuf for the SaveProject request; its project graph cannot currently be sent as raw JSON.
