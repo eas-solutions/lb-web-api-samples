@@ -6,52 +6,55 @@ For a new project, start with [`CreateNewProject`](CreateNewProject.md). For an 
 
 ## Endpoint
 
-| Item | Value |
-| --- | --- |
-| Method | `POST` |
-| URL | `/api/Project/SaveProject` |
-| Body | JSON `SaveProjectParameter` object |
+| Item           | Value                                  |
+| -------------- | -------------------------------------- |
+| Method         | `POST`                                 |
+| URL            | `/api/Project/SaveProject`             |
+| Body           | Protocol Buffers `SaveProjectParameter` object      |
+| Response       | Protocol Buffers (`application/x-protobuf`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
-Set `BASE_URL` to your API address and `ACCESS_TOKEN` to a valid access token before running the examples.
+Set `ACCESS_TOKEN` to a valid access token before running the example. The localhost URL is suitable only for development.
 
-## Minimum create request
+## Create requests
 
-This is the smallest explicit create request. In a real workflow, send the complete initialized project returned by `CreateNewProject` so configured defaults are retained.
+Do not create a project from a partial object containing only `ProjectID`. Live validation showed that this can persist a malformed project with an empty `InternalProjectID`. The validation record was removed after the test.
 
-```bash
-curl --request POST "${BASE_URL}/api/Project/SaveProject" \
-	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
-	--header "Content-Type: application/json" \
-	--data '{
-		"Type": "CreateNew",
-		"Project": {
-			"ProjectID": "P-1001"
-		}
-	}'
-```
+For a create workflow, call `CreateNewProject`, retain the complete initialized project, assign the required business values, set `Type` to `CreateNew`, and serialize the complete `SaveProjectParameter` with the API client. A minimal create curl example is intentionally not provided because the partial request is unsafe.
 
 ## Common update request
 
-This follows the editor's load-edit-save flow without dropping fields. First save a `GetProject` response produced with `IncludeCustomDefinitionValues: true` as `get-project-response.json`. The `jq` command changes the description and builds a save request that preserves the complete project and custom-value dictionary.
+This follows the editor's load-edit-save flow without dropping fields. Load the project with both GetProject include flags set to `true`, change only the desired values, and serialize this object with the deployed contracts:
 
-```bash
-jq '
-	.Project.Description = "Updated project name"
-	| {
-		Type: "UpdateExisting",
-		Project: .Project,
-		CustomDefinitionValues: .CustomDefinitionValues
+```json
+{
+	"Type": "UpdateExisting",
+	"SkipDataValidation": true,
+	"Project": {
+		"InternalProjectID": "<redacted internal project ID>",
+		"ProjectID": "Aktuellste Demo",
+		"<remaining project fields>": "<preserved>"
+	},
+	"CustomDefinitionValues": {
+		"<custom property name>": "<preserved SerializableObject>"
 	}
-' get-project-response.json > save-project-request.json
-
-curl --request POST "${BASE_URL}/api/Project/SaveProject" \
-	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
-	--header "Content-Type: application/json" \
-	--data @save-project-request.json
+}
 ```
 
-Omitting `SkipDataValidation` keeps its default value of `false`, which is recommended for API integrations. The frontend currently bypasses server validation in one internal workflow because of a known dependency-injection issue; that is not a recommended integration pattern.
+This JSON is an abbreviated representation of the object to serialize, not an HTTP JSON body. Save the protobuf-serialized request as `save-project-request.pb`, then send the exact tested curl request:
+
+```bash
+curl --request POST "http://localhost:56540/api/Project/SaveProject" \
+	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
+	--header "Content-Type: application/x-protobuf" \
+	--header "Accept: application/x-protobuf" \
+	--data-binary @save-project-request.pb \
+	--output save-project-response.pb
+```
+
+The live test changed the project with ProjectID `Aktuelle Demo` to `Aktuellste Demo`. SaveProject returned HTTP `200` with a successful operation. A follow-up GetProject returned HTTP `200`, confirmed the new ProjectID, and confirmed that the one custom-definition entry was preserved.
+
+The first live attempt used `SkipDataValidation: false` and reached the endpoint, but failed because this server could not map `SystemViewSchema` to `SystemViewSchemaWebDto`. The retry used the frontend's current workaround, `SkipDataValidation: true`. Use `false` when validation is correctly configured; use `true` only when this known server configuration defect applies and the caller performs equivalent validation.
 
 ## Request properties
 
@@ -59,31 +62,37 @@ Omitting `SkipDataValidation` keeps its default value of `false`, which is recom
 | --- | --- | --- | --- |
 | `Type` | `SaveProjectType` | Yes | `CreateNew` inserts a project; `UpdateExisting` updates the project identified by `Project.InternalProjectID`. |
 | `Project` | `Project` | Yes | Project to save. `ProjectID` must not be empty. Send the complete loaded/initialized object to preserve its values. |
-| `SkipDataValidation` | `boolean` | No | Skips update validation when `true`. Default and recommended value: `false`. |
+| `SkipDataValidation` | `boolean` | No | Skips update validation when `true`. Default: `false`. The tested server currently requires `true` because its update validator fails during system-view mapping. |
 | `CustomDefinitionValues` | `Dictionary<string, SerializableObject>` | No | Custom values keyed by custom property name. During an update, existing values missing from this dictionary are marked for deletion. Preserve and return the complete dictionary loaded for the project. |
 | `SchemaName` | `string` | No | Schema used to validate updates instead of the authenticated user's default schema. |
 
-`Type` accepts `CreateNew` and `UpdateExisting`. Use the string names shown in the examples.
+`Type` accepts `CreateNew` (`0`) and `UpdateExisting` (`1`). The protobuf serializer writes the enum value.
 
 > [!WARNING]
 > Omitting `CustomDefinitionValues` from an update can delete all existing custom definition values. Load them with `GetProject`, preserve every unchanged entry, and send the complete dictionary back.
 
-## Response and errors
+## Response
 
-Check `OperationResult.Successful` before using the returned `Project`. On success, `Project` contains the saved server-side representation.
+SaveProject accepts and returns Protocol Buffers. Raw JSON requests currently return HTTP `500` because the server detects a JSON property-name collision while building metadata for the project entity graph. Use the official WebApiClient or the deployed contracts and `protobuf-net` to serialize `SaveProjectParameter` and deserialize `SaveProjectReturnParameter`.
+
+Check `OperationResult.Successful` before using the returned `Project`. On success, `Project` contains the saved server-side representation. The abbreviated object below represents the decoded live response; it is not the raw protobuf HTTP body. All fields except the changed ProjectID are omitted or redacted.
 
 ```json
 {
 	"OperationResult": {
+		"DetailedMessage": null,
+		"OperationFailType": 0,
+		"ShortMessage": null,
 		"Successful": true
 	},
 	"Project": {
-		"InternalProjectID": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
-		"ProjectID": "P-1001",
-		"Description": "Updated project name"
+		"InternalProjectID": "<redacted internal project ID>",
+		"ProjectID": "Aktuellste Demo"
 	}
 }
 ```
+
+## Errors
 
 | Situation | `OperationResult.ShortMessage` |
 | --- | --- |
