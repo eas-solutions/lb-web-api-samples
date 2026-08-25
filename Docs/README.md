@@ -2,6 +2,10 @@
 
 This directory contains practical documentation for the LEEGOO BUILDER Web API. Endpoint guides are organized by controller, so start with the controller that owns the endpoint you need.
 
+## AuthenticationController
+
+- [Login](Authentication/Login.md): Authenticate a user and obtain the access token required by other endpoints.
+
 ## ProjectController
 
 - [CreateNewProject](Project/CreateNewProject.md): Initialize a project for editing or create and persist it immediately.
