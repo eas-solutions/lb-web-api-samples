@@ -20,6 +20,7 @@ Validate the request examples in `<DOCUMENTATION_FILE>` against the already runn
    - The exact working curl request, using the supplied non-production test values.
    - The observed HTTP status.
    - A representative real response preserving actual JSON property casing, null values, and structure.
+   - A response-properties table with `Property`, `Type`, `Nullable / omitted`, and `Description` columns. Base it on the return contract and implementation; describe request-controlled fields as conditional and keep installation-specific entity graphs at their contract-object level.
    - A short statement describing any successful follow-up validation.
    - Clear environment-specific caveats, such as localhost HTTP being suitable only for development.
 9. Redact access tokens, renewal tokens, passwords in responses, cookies, claim details, personal data, and other secrets. Never print raw secrets to chat or terminal output. Keep placeholders structurally faithful to the original JSON type.
@@ -33,6 +34,7 @@ Before finishing:
 1. Parse every inline JSON request and response added or changed in the guide.
 2. Confirm the documented route, request fields, defaults, and response paths against source.
 3. Confirm each tested curl command has a successful live result.
-4. Check all relative Markdown links and run `git diff --check` for the documentation files.
-5. Run editor diagnostics for every changed Markdown file.
-6. Report which examples were tested, their HTTP status, whether follow-up validation passed, and exactly which sensitive values were redacted.
+4. Confirm the response-properties table covers the response envelope and every top-level return property, including whether each is nullable or omitted.
+5. Check all relative Markdown links and run `git diff --check` for the documentation files.
+6. Run editor diagnostics for every changed Markdown file.
+7. Report which examples were tested, their HTTP status, whether follow-up validation passed, and exactly which sensitive values were redacted.
