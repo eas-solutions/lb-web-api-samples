@@ -29,6 +29,28 @@ curl --request POST "http://localhost:56540/api/Proposal/SaveProposal" \
 
 Live validation returned HTTP `200` with content type `application/x-protobuf`. Decoding `SaveProposalReturnParameter` reported success and returned the saved proposal. A subsequent `GetProposal` returned HTTP `200` and the same internal proposal ID.
 
+## Saving custom values
+
+Custom values require an existing proposal custom-field definition. First use [`GetCustomDefinitionsInfos`](../CustomDefinition/GetCustomDefinitionsInfos.md) with `CustomDefinitionTableType: 2`, then load the proposal with `IncludeCustomDefinitionValues: true` and preserve the returned values.
+
+```csharp
+foreach (var value in getProposal.CustomDefinitionValues)
+	getProposal.Proposal.CustomDefinitionsPropertyNameAndValueDictionary[value.Key] = value.Value;
+
+var values = getProposal.Proposal.CustomDefinitionsPropertyNameAndValueDictionary;
+values["<custom-property-name>"] = new SerializableObject("API documentation validation");
+
+var save = new SaveProposalParameter(getProposal.Proposal)
+{
+	IncludeCustomDefinitionValues = true,
+	CustomDefinitionValues = values
+};
+```
+
+Serialize the complete `save` object as protobuf and send it with the curl request above. With `IncludeCustomDefinitionValues: true`, entries from an existing dictionary that are not present in `CustomDefinitionValues` are deleted. Preserve unchanged entries. Arbitrary keys do not create definitions or values.
+
+The live test installation currently has no configured proposal custom definitions, so this workflow could not add a proposal custom value there.
+
 ## Request properties
 
 | Property | Type | Required | Description |

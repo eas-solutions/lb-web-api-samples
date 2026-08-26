@@ -56,6 +56,27 @@ The live test changed the project with ProjectID `Aktuelle Demo` to `Aktuellste 
 
 The first live attempt used `SkipDataValidation: false` and reached the endpoint, but failed because this server could not map `SystemViewSchema` to `SystemViewSchemaWebDto`. The retry used the frontend's current workaround, `SkipDataValidation: true`. Use `false` when validation is correctly configured; use `true` only when this known server configuration defect applies and the caller performs equivalent validation.
 
+## Saving custom values
+
+Custom values require an existing project custom-field definition. First use [`GetCustomDefinitionsInfos`](../CustomDefinition/GetCustomDefinitionsInfos.md) with `CustomDefinitionTableType: 3`, then load the project with `IncludeCustomDefinitionValues: true`. Use a returned definition's `CustomPropertyName` as the dictionary key and create a type-correct `SerializableObject` value.
+
+```csharp
+var values = project.CustomDefinitionsPropertyNameAndValueDictionary;
+values["<custom-property-name>"] = new SerializableObject("API documentation validation");
+
+var save = new SaveProjectParameter
+{
+	Type = SaveProjectType.UpdateExisting,
+	Project = project,
+	CustomDefinitionValues = values,
+	SkipDataValidation = true
+};
+```
+
+Serialize the complete `save` object as protobuf and send it with the curl request above. `SaveProject` loads all existing project custom values and treats dictionary entries that are absent or supplied as `null` as deletions. Preserve every unchanged entry in `CustomDefinitionValues`; arbitrary keys do not create definitions or values.
+
+The live test installation currently has no configured project custom definitions, so this workflow could not add a project custom value there.
+
 ## Request properties
 
 | Property | Type | Required | Description |

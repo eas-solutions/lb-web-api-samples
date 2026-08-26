@@ -20,3 +20,8 @@ This directory contains practical documentation for the LEEGOO BUILDER Web API. 
 - [SaveProposal](Proposal/SaveProposal.md): Persist an initialized or updated proposal.
 - [GetProposals](Proposal/GetProposals.md): List proposals for a project or the authenticated user's visible projects.
 - [GetProposal](Proposal/GetProposal.md): Load one proposal by its internal ID.
+
+## Custom Definition Endpoints
+
+- [GetCustomDefinitionsInfos](CustomDefinition/GetCustomDefinitionsInfos.md): List configured custom fields for an entity type.
+- [GetCustomDefinitionValuesInfos](CustomDefinition/GetCustomDefinitionValuesInfos.md): Inspect the currently unimplemented custom-field value metadata endpoint.
