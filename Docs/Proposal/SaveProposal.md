@@ -62,6 +62,16 @@ The live test installation currently has no configured proposal custom definitio
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for the save operation. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the proposal was saved successfully. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Proposal` | `Proposal` | Yes | Server-side representation of the saved proposal; `null` when saving fails. Its fields are configuration- and installation-specific. |
+| `Proposal.InternalProposalID` | `GUID` | Yes | Internal identifier of the saved proposal. |
+| `Proposal.ProposalID` | `string` | Yes | Human-readable identifier after the save operation. |
+
 The abbreviated object below is a decoded protobuf response from the live test, not raw JSON. IDs and installation-specific proposal fields are redacted.
 
 ```json

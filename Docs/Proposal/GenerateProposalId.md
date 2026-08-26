@@ -41,6 +41,16 @@ Live validation returned HTTP `200` with `operationResult.successful: true` and 
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `operationResult` | `OperationResultWeb` | No | Result envelope for proposal-ID generation. |
+| `operationResult.successful` | `boolean` | No | `true` when all identifier parts were generated. Derived from `operationFailType`. |
+| `operationResult.shortMessage` | `string` | Yes | Concise failure or status message. |
+| `operationResult.detailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `proposalId` | `string` | Yes | Complete generated proposal ID. Do not treat it as reserved or persisted. |
+| `proposalIdMain` | `string` | Yes | Generated main part of `proposalId`. |
+| `proposalIdAppendix` | `string` | Yes | Generated appendix part of `proposalId`. |
+
 Check `operationResult.successful` before using the generated parts. The following is a redacted representative response from the live request; property names and null values are preserved.
 
 ```json

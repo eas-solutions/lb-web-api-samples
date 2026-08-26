@@ -50,6 +50,16 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for proposal initialization. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the proposal was initialized successfully. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Proposal` | `Proposal` | Yes | Initialized proposal graph; `null` when initialization fails. Its fields are configuration- and installation-specific. |
+| `Proposal.InternalProposalID` | `GUID` | Yes | New internal proposal identifier, available on a successful response. |
+| `Proposal.ProposalID` | `string` | Yes | Generated human-readable proposal identifier, available on a successful response. |
+
 This endpoint's entity graph cannot currently be serialized as JSON on the tested server: requesting `application/json` returned HTTP `500` with a JSON-serialization error. Request protobuf as shown above and decode `NewProposalReturnParameter` with `EAS.LeegooBuilder.Web.WebApiClient` or the deployed protobuf contract.
 
 The abbreviated object below is a decoded live response, not the raw HTTP body. Generated identifiers and installation-specific fields are redacted.

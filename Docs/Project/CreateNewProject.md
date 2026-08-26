@@ -77,6 +77,16 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for the initialization or immediate-save operation. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the project was initialized successfully. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Project` | `Project` | Yes | Initialized project graph; `null` when the operation fails. Its fields are schema- and installation-specific. |
+| `Project.InternalProjectID` | `GUID` | Yes | New internal project identifier, available on a successful response. |
+| `Project.ProjectID` | `string` | Yes | Generated human-readable project identifier, available on a successful response. |
+
 The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which deserializes `CreateNewProjectReturnParameter`.
 
 After deserialization, check `OperationResult.Successful`. On success, `Project` contains the initialized project, its generated `ProjectID`, its new `InternalProjectID`, and loaded custom definitions.

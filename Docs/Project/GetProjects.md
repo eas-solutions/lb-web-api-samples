@@ -95,6 +95,22 @@ Choose only the `ProjectsContent` values needed by the caller:
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for the project-list operation. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the requested response content was loaded. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Projects` | `Project[]` | Yes | Project graphs selected by `ProjectsContent: Projects` (`10`). |
+| `QueryInfo` | `QueryInfo` | Yes | Paging metadata for the project list, including `RecordsTotal`; omitted when no project list is loaded. |
+| `QueryInfo.RecordsTotal` | `integer` | Yes | Total matching records before `Skip` and `Take` paging. |
+| `CustomDefinitionValues` | `Dictionary<GUID, Dictionary<string, SerializableObject>>` | Yes | Custom values by project ID and custom-property name, selected by `CustomDefinitionValues` (`30`). |
+| `Layout` | `GridLayoutWeb` | Yes | Saved grid layout, selected by `UserSettings` (`20`). |
+| `ViewData` | `SystemViewWebDto[]` | Yes | Full project-grid metadata, selected by `SystemViews` (`40`). |
+| `BasicColumDefinitions` | `BasicColumnDefinitionWeb[]` | Yes | Lightweight column metadata, selected by `BasicColumDefinitions` (`45`). The contract uses this spelling. |
+| `Data` | `string` | Yes | Legacy DevExpress grid JSON, selected by `TableData` (`50`). The current implementation does not populate it. |
+| `SysCodes` | `SysCodeItemWebDto[]` | Yes | Localized system-code values, selected by `SysCodes` (`70`). |
+
 The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which requests `application/x-protobuf` and deserializes `GetProjectsReturnParameter`.
 
 After deserialization, check `OperationResult.Successful` before using the requested data. On failure, use `OperationResult.ShortMessage` to show or log the reason. The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.

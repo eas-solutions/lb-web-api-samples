@@ -62,6 +62,17 @@ Live validation returned HTTP `200` with a successful decoded operation and the 
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for the proposal load operation. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the requested proposal was loaded. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Proposal` | `Proposal` | Yes | Loaded proposal graph; `null` when the proposal cannot be loaded. Its fields are configuration- and installation-specific. |
+| `Proposal.InternalProposalID` | `GUID` | Yes | Internal identifier of the loaded proposal. |
+| `Proposal.ProposalID` | `string` | Yes | Human-readable proposal identifier. |
+| `CustomDefinitionValues` | `Dictionary<string, SerializableObject>` | Yes | Custom values keyed by custom-property name. Populated only when `IncludeCustomDefinitionValues` is `true`; otherwise `null`. |
+
 Requesting `application/json` returned HTTP `500` with a JSON-serialization error on the tested server. Use protobuf and decode `GetProposalReturnParameter`.
 
 The following is an abbreviated decoded live response. IDs, related data, custom-property names, and values are redacted.

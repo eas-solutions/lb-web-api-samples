@@ -54,6 +54,19 @@ Live validation returned HTTP `200` with `operationResult.successful: true`. The
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `operationResult` | `OperationResultWeb` | No | Result envelope for the lookup operation. |
+| `operationResult.successful` | `boolean` | No | `true` when the definitions were loaded successfully. Derived from `operationFailType`. |
+| `operationResult.shortMessage` | `string` | Yes | Concise failure or status message. |
+| `operationResult.detailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `componentCustomDefinitionItems` | `ComponentCustomDefinitionItemWebDto[]` | Yes | Definitions when `CustomDefinitionTableType` is `Component` (`1`); otherwise `null`. |
+| `proposalCustomDefinitionItems` | `ProposalCustomDefinitionItemWebDto[]` | Yes | Definitions when the requested type is `Proposal` (`2`); otherwise `null`. |
+| `projectCustomDefinitionItems` | `ProjectCustomDefinitionItemWebDto[]` | Yes | Definitions when the requested type is `Project` (`3`); otherwise `null`. |
+| `elementCustomDefinitionItems` | `ElementCustomDefinitionItemWebDto[]` | Yes | Definitions when the requested type is `Element` (`4`); otherwise `null`. |
+| `constructionKitCustomDefinitionItems` | `ConstructionKitCustomDefinitionItemWebDto[]` | Yes | Definitions when the requested type is `ConstructionKit` (`5`); otherwise `null`. |
+| `companyCustomDefinitionItems` | `CompanyCustomDefinitionItemWebDto[]` | Yes | Definitions when the requested type is `Company` (`6`); otherwise `null`. |
+
 Only the list for the requested table type is populated. Read each definition's `CustomPropertyName` and data-type metadata before creating a `SerializableObject` value for a save request.
 
 The project request above returned this representative real response. Property casing, null values, and the empty configured-definition list are preserved.

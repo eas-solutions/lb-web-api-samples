@@ -83,6 +83,20 @@ Live validation returned HTTP `200` with a successful decoded operation and list
 
 ## Response
 
+| Property | Type | Nullable / omitted | Description |
+| --- | --- | --- | --- |
+| `OperationResult` | `OperationResultWeb` | No | Result envelope for the proposal-list operation. |
+| `OperationResult.Successful` | `boolean` | No | `true` when the requested response content was loaded. Derived from `OperationFailType`. |
+| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
+| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `Proposals` | `Proposal[]` | Yes | Proposal graphs selected by `Content: Proposals` (`20`). |
+| `QueryInfo` | `QueryInfo` | Yes | Paging metadata for the proposal list, including `RecordsTotal`; omitted when no proposal list is loaded. |
+| `QueryInfo.RecordsTotal` | `integer` | Yes | Total matching records before `Skip` and `Take` paging. |
+| `CustomDefinitionValues` | `Dictionary<GUID, Dictionary<string, SerializableObject>>` | Yes | Custom values by proposal ID and custom-property name, selected by `Content: CustomDefinitionValues` (`40`). |
+| `Layout` | `GridLayoutWeb` | Yes | Saved grid layout, selected by `Content: UserSettings` (`30`). |
+| `SystemViewWeb` | `SystemViewWebDto[]` | Yes | Proposal-grid metadata, selected by `Content: SystemViews` (`50`). |
+| `Data` | `string` | Yes | Legacy DevExpress grid JSON, selected by `Content: TableData` (`60`). |
+
 Requesting `application/json` returned HTTP `500` with a JSON-serialization error on the tested server. Use protobuf and decode `GetProposalsReturnParameter`.
 
 The following is an abbreviated decoded live response. IDs, project data, people, companies, and custom values are redacted.
