@@ -24,4 +24,3 @@ This directory contains practical documentation for the LEEGOO BUILDER Web API. 
 ## Custom Definition Endpoints
 
 - [GetCustomDefinitionsInfos](CustomDefinition/GetCustomDefinitionsInfos.md): List configured custom fields for an entity type.
-- [GetCustomDefinitionValuesInfos](CustomDefinition/GetCustomDefinitionValuesInfos.md): Inspect the currently unimplemented custom-field value metadata endpoint.

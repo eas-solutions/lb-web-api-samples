@@ -99,6 +99,40 @@ The supported response format for this endpoint is Protocol Buffers. Save curl's
 
 After deserialization, check `OperationResult.Successful` before using the requested data. On failure, use `OperationResult.ShortMessage` to show or log the reason. The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.
 
+The abbreviated object below is the decoded response from the current one-record common request, not the raw protobuf HTTP body. The returned custom-property name and value are redacted; installation-specific project fields are omitted.
+
+```json
+{
+	"OperationResult": {
+		"DetailedMessage": null,
+		"Exception": null,
+		"OperationFailType": 0,
+		"ShortMessage": null,
+		"Successful": true,
+		"ThrowException": false,
+		"TranslatorTerm": null
+	},
+	"Projects": [
+		{
+			"InternalProjectID": "9897f980-1b7d-ed11-81d0-f2b3bff92a45",
+			"ProjectID": "Aktuellste Demo",
+			"Description": "Aktuelle Demo",
+			"IsFavorite": true
+		}
+	],
+	"QueryInfo": {
+		"RecordsTotal": 3,
+		"SelectedItemAtIndex": null,
+		"SelectedItemAtPage": null
+	},
+	"CustomDefinitionValues": {
+		"9897f980-1b7d-ed11-81d0-f2b3bff92a45": {
+			"<redacted custom property name>": "<redacted SerializableObject>"
+		}
+	}
+}
+```
+
 Requesting `application/json` currently returns HTTP `500` for both examples because the server detects a JSON property-name collision in the project entity graph. Do not omit the protobuf `Accept` header until that server-side serialization issue is fixed.
 
 For paged requests, read `QueryInfo.RecordsTotal` after protobuf deserialization to determine the total number of matching projects.
