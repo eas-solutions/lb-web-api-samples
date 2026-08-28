@@ -67,7 +67,7 @@ The properties used by the common grid request are listed first. Property names 
 | Property | Type | Required | Description |
 | --- | --- | --- | --- |
 | `ProjectsContent` | `GetProjectsContent[]` | Yes | Selects which response data to populate. Raw JSON uses the numeric values shown below. |
-| `QuerySettings` | `QuerySettings` | No | Controls paging (`Skip`, `Take`) and can also control sorting, filtering, selected properties, and distinct results. |
+| `QuerySettings` | [`QuerySettings`](../Common/QuerySettings.md) | No | Common filtering, searching, sorting, selection, index, and paging settings. |
 | `SchemaName` | `string` | No | System-view schema to use instead of the authenticated user's active schema. |
 | `Language` | `string` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
 | `LoadOptions` | `ProjectLoadType[]` | No | Retained in the request contract, but the current `GetProjects` implementation does not read it. |
@@ -97,13 +97,9 @@ Choose only the `ProjectsContent` values needed by the caller:
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for the project-list operation. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the requested response content was loaded. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the project-list operation. |
 | `Projects` | `Project[]` | Yes | Project graphs selected by `ProjectsContent: Projects` (`10`). |
-| `QueryInfo` | `QueryInfo` | Yes | Paging metadata for the project list, including `RecordsTotal`; omitted when no project list is loaded. |
-| `QueryInfo.RecordsTotal` | `integer` | Yes | Total matching records before `Skip` and `Take` paging. |
+| `QueryInfo` | [`QueryInfo`](../Common/QueryInfo.md) | Yes | Total-count and selected-item metadata for `QuerySettings`; omitted when no project list is loaded. |
 | `CustomDefinitionValues` | `Dictionary<GUID, Dictionary<string, SerializableObject>>` | Yes | Custom values by project ID and custom-property name, selected by `CustomDefinitionValues` (`30`). |
 | `Layout` | `GridLayoutWeb` | Yes | Saved grid layout, selected by `UserSettings` (`20`). |
 | `ViewData` | `SystemViewWebDto[]` | Yes | Full project-grid metadata, selected by `SystemViews` (`40`). |
@@ -113,7 +109,7 @@ Choose only the `ProjectsContent` values needed by the caller:
 
 The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which requests `application/x-protobuf` and deserializes `GetProjectsReturnParameter`.
 
-After deserialization, check `OperationResult.Successful` before using the requested data. On failure, use `OperationResult.ShortMessage` to show or log the reason. The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.
+The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.
 
 The abbreviated object below is the decoded response from the current one-record common request, not the raw protobuf HTTP body. The returned custom-property name and value are redacted; installation-specific project fields are omitted.
 

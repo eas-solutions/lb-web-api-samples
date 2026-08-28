@@ -2,6 +2,12 @@
 
 This directory contains practical documentation for the LEEGOO BUILDER Web API. Endpoint guides are grouped by their purpose.
 
+## Common Concepts
+
+- [OperationResult](Common/OperationResult.md): Interpret the common success and failure envelope returned by API operations.
+- [QuerySettings](Common/QuerySettings.md): Filter, search, sort, select, and page list requests.
+- [QueryInfo](Common/QueryInfo.md): Read total-count and selected-item metadata returned for dynamic queries.
+
 ## Authentication Endpoints
 
 - [Login](Authentication/Login.md): Authenticate a user and obtain the access token required by other endpoints.

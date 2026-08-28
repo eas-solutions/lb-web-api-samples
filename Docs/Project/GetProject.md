@@ -64,10 +64,7 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for the project load operation. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the requested project was loaded. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the project load operation. |
 | `Project` | `Project` | Yes | Loaded project graph; `null` when the project cannot be loaded. Its fields are schema- and installation-specific. |
 | `Project.InternalProjectID` | `GUID` | Yes | Internal identifier of the loaded project. |
 | `Project.ProjectID` | `string` | Yes | Human-readable project identifier. |
@@ -75,7 +72,7 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 
 The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which deserializes `GetProjectReturnParameter`.
 
-After deserialization, check `OperationResult.Successful` before using `Project`. When custom values were requested, merge `CustomDefinitionValues` into your editing model by property name if needed.
+When custom values were requested, merge `CustomDefinitionValues` into your editing model by property name if needed.
 
 The abbreviated object below represents the decoded common response from the live test. It is not the raw HTTP body; the raw body is protobuf. The internal ID, remaining project fields, related records, custom property name, and custom value are redacted.
 

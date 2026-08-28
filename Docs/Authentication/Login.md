@@ -56,10 +56,7 @@ Properties used by the normal username/password request are listed first.
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `operationResult` | `OperationResultWeb` | No | Result envelope for the authentication attempt. |
-| `operationResult.successful` | `boolean` | No | `true` when authentication completed successfully. Derived from `operationFailType`. |
-| `operationResult.shortMessage` | `string` | Yes | Concise failure or status message. |
-| `operationResult.detailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `operationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the authentication attempt. |
 | `renewalToken` | `string` | Yes | Token for renewing an expired access token. The current implementation returns `null`. |
 | `user` | `UserWeb` | Yes | Authenticated user; absent or `null` when login fails. |
 | `user.id` | `GUID` | Yes | Internal identifier of the authenticated user. |
@@ -69,7 +66,7 @@ Properties used by the normal username/password request are listed first.
 | `user.loginLanguage` | `string` | Yes | Language selected for the authenticated session. |
 | `user.claims` | `Dictionary<string, string[]>` | Yes | Authorization claims grouped by claim name. |
 
-Check `operationResult.successful` before reading `user`. The access token is returned in `user.token` (`User.Token` in the C# client) and must be sent with later requests as `Authorization: Bearer <token>`.
+On success, the access token is returned in `user.token` (`User.Token` in the C# client) and must be sent with later requests as `Authorization: Bearer <token>`.
 
 The verified request returned HTTP `200` with the response below. The access token and claim details are redacted, but property casing, null values, and the remaining values match the real response.
 
