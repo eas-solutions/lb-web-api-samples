@@ -64,10 +64,7 @@ Live validation returned HTTP `200` with a successful decoded operation and the 
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for the proposal load operation. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the requested proposal was loaded. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the proposal load operation. |
 | `Proposal` | `Proposal` | Yes | Loaded proposal graph; `null` when the proposal cannot be loaded. Its fields are configuration- and installation-specific. |
 | `Proposal.InternalProposalID` | `GUID` | Yes | Internal identifier of the loaded proposal. |
 | `Proposal.ProposalID` | `string` | Yes | Human-readable proposal identifier. |
@@ -93,4 +90,4 @@ The following is an abbreviated decoded live response. IDs, related data, custom
 }
 ```
 
-Custom values are `SerializableObject` values rather than plain JSON values. Preserve them unchanged when submitting a later `SaveProposal` request. On a failed load, inspect `OperationResult.ShortMessage` before using `Proposal`.
+Custom values are `SerializableObject` values rather than plain JSON values. Preserve them unchanged when submitting a later `SaveProposal` request.

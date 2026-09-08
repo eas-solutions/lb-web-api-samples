@@ -64,7 +64,7 @@ Live validation returned HTTP `200` with a successful decoded operation and list
 | `ProjectId` | `GUID` or `null` | Yes unless `LoadAllProposals` or `OnlyFavorites` is `true` | Limits results to one project. |
 | `LoadAllProposals` | `boolean` | No | Searches all projects visible to the authenticated user when `true`. Default: `false`. |
 | `OnlyFavorites` | `boolean` | No | Searches only the current user's favorite proposals. Default: `false`. |
-| `QuerySettings` | `QuerySettings` | No | Controls paging (`Skip`, `Take`), sorting, and filtering. Use the API client's query model for detailed filters. |
+| `QuerySettings` | [`QuerySettings`](../Common/QuerySettings.md) | No | Common filtering, searching, sorting, selection, index, and paging settings. |
 | `SelectedView` | `string` | No | System-view identifier used for grid metadata and layout loading. |
 | `Language` | `string` | No | Present in the contract but not read by the current implementation. |
 
@@ -85,13 +85,9 @@ Live validation returned HTTP `200` with a successful decoded operation and list
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for the proposal-list operation. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the requested response content was loaded. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the proposal-list operation. |
 | `Proposals` | `Proposal[]` | Yes | Proposal graphs selected by `Content: Proposals` (`20`). |
-| `QueryInfo` | `QueryInfo` | Yes | Paging metadata for the proposal list, including `RecordsTotal`; omitted when no proposal list is loaded. |
-| `QueryInfo.RecordsTotal` | `integer` | Yes | Total matching records before `Skip` and `Take` paging. |
+| `QueryInfo` | [`QueryInfo`](../Common/QueryInfo.md) | Yes | Total-count and selected-item metadata for `QuerySettings`; omitted when no proposal list is loaded. |
 | `CustomDefinitionValues` | `Dictionary<GUID, Dictionary<string, SerializableObject>>` | Yes | Custom values by proposal ID and custom-property name, selected by `Content: CustomDefinitionValues` (`40`). |
 | `Layout` | `GridLayoutWeb` | Yes | Saved grid layout, selected by `Content: UserSettings` (`30`). |
 | `SystemViewWeb` | `SystemViewWebDto[]` | Yes | Proposal-grid metadata, selected by `Content: SystemViews` (`50`). |

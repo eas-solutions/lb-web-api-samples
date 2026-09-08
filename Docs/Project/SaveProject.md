@@ -96,17 +96,14 @@ The live test installation currently has no configured project custom definition
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for the save operation. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the project was saved successfully. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for the save operation. |
 | `Project` | `Project` | Yes | Server-side representation of the saved project; `null` when saving fails. Its fields are schema- and installation-specific. |
 | `Project.InternalProjectID` | `GUID` | Yes | Internal identifier of the saved project. |
 | `Project.ProjectID` | `string` | Yes | Human-readable identifier after the save operation. |
 
 SaveProject accepts and returns Protocol Buffers. Raw JSON requests currently return HTTP `500` because the server detects a JSON property-name collision while building metadata for the project entity graph. Use the official WebApiClient or the deployed contracts and `protobuf-net` to serialize `SaveProjectParameter` and deserialize `SaveProjectReturnParameter`.
 
-Check `OperationResult.Successful` before using the returned `Project`. On success, `Project` contains the saved server-side representation. The abbreviated object below represents the decoded live response; it is not the raw protobuf HTTP body. All fields except the changed ProjectID are omitted or redacted.
+On success, `Project` contains the saved server-side representation. The abbreviated object below represents the decoded live response; it is not the raw protobuf HTTP body. All fields except the changed ProjectID are omitted or redacted.
 
 ```json
 {

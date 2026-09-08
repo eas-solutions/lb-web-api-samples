@@ -52,10 +52,7 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 
 | Property | Type | Nullable / omitted | Description |
 | --- | --- | --- | --- |
-| `OperationResult` | `OperationResultWeb` | No | Result envelope for proposal initialization. |
-| `OperationResult.Successful` | `boolean` | No | `true` when the proposal was initialized successfully. Derived from `OperationFailType`. |
-| `OperationResult.ShortMessage` | `string` | Yes | Concise failure or status message. |
-| `OperationResult.DetailedMessage` | `string` | Yes | Additional diagnostic detail when available. |
+| `OperationResult` | [`OperationResultWeb`](../Common/OperationResult.md) | No | Common application-level result envelope for proposal initialization. |
 | `Proposal` | `Proposal` | Yes | Initialized proposal graph; `null` when initialization fails. Its fields are configuration- and installation-specific. |
 | `Proposal.InternalProposalID` | `GUID` | Yes | New internal proposal identifier, available on a successful response. |
 | `Proposal.ProposalID` | `string` | Yes | Generated human-readable proposal identifier, available on a successful response. |
