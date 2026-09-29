@@ -10,8 +10,8 @@ For a new project, start with [`CreateNewProject`](CreateNewProject.md). For an 
 | -------------- | -------------------------------------- |
 | Method         | `POST`                                 |
 | URL            | `/api/Project/SaveProject`             |
-| Body           | Protocol Buffers `SaveProjectParameter` object      |
-| Response       | Protocol Buffers (`application/x-protobuf`) |
+| Body           | JSON `SaveProjectParameter` object      |
+| Response       | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
 Set `ACCESS_TOKEN` to a valid access token before running the example. The localhost URL is suitable only for development.
@@ -20,7 +20,7 @@ Set `ACCESS_TOKEN` to a valid access token before running the example. The local
 
 Do not create a project from a partial object containing only `ProjectID`. Live validation showed that this can persist a malformed project with an empty `InternalProjectID`. The validation record was removed after the test.
 
-For a create workflow, call `CreateNewProject`, retain the complete initialized project, assign the required business values, set `Type` to `CreateNew`, and serialize the complete `SaveProjectParameter` with the API client. A minimal create curl example is intentionally not provided because the partial request is unsafe.
+For a create workflow, call `CreateNewProject`, retain the complete initialized project, assign the required business values, set `Type` to `CreateNew`, and save the complete `SaveProjectParameter` as JSON. A minimal create curl example is intentionally not provided because the partial request is unsafe.
 
 ## Common update request
 
@@ -41,15 +41,15 @@ This follows the editor's load-edit-save flow without dropping fields. Load the 
 }
 ```
 
-This JSON is an abbreviated representation of the object to serialize, not an HTTP JSON body. Save the protobuf-serialized request as `save-project-request.pb`, then send the exact tested curl request:
+This JSON is an abbreviated representation of the complete HTTP request body. Save the complete request as `save-project-request.json`, then send the exact tested curl request:
 
 ```bash
 curl --request POST "http://localhost:56540/api/Project/SaveProject" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
-	--header "Content-Type: application/x-protobuf" \
-	--header "Accept: application/x-protobuf" \
-	--data-binary @save-project-request.pb \
-	--output save-project-response.pb
+	--header "Content-Type: application/json" \
+	--header "Accept: application/json" \
+	--data @save-project-request.json \
+	--output save-project-response.json
 ```
 
 The live test changed the project with ProjectID `Aktuelle Demo` to `Aktuellste Demo`. SaveProject returned HTTP `200` with a successful operation. A follow-up GetProject returned HTTP `200`, confirmed the new ProjectID, and confirmed that the one custom-definition entry was preserved.
@@ -73,7 +73,7 @@ var save = new SaveProjectParameter
 };
 ```
 
-Serialize the complete `save` object as protobuf and send it with the curl request above. `SaveProject` loads all existing project custom values and treats dictionary entries that are absent or supplied as `null` as deletions. Preserve every unchanged entry in `CustomDefinitionValues`; arbitrary keys do not create definitions or values.
+Save the complete `save` object as JSON and send it with the curl request above. `SaveProject` loads all existing project custom values and treats dictionary entries that are absent or supplied as `null` as deletions. Preserve every unchanged entry in `CustomDefinitionValues`; arbitrary keys do not create definitions or values.
 
 The live test installation currently has no configured project custom definitions, so this workflow could not add a project custom value there.
 
@@ -87,7 +87,7 @@ The live test installation currently has no configured project custom definition
 | `CustomDefinitionValues` | `Dictionary<string, SerializableObject>` | No | Custom values keyed by custom property name. During an update, existing values missing from this dictionary are marked for deletion. Preserve and return the complete dictionary loaded for the project. |
 | `SchemaName` | `string` | No | Schema used to validate updates instead of the authenticated user's default schema. |
 
-`Type` accepts `CreateNew` (`0`) and `UpdateExisting` (`1`). The protobuf serializer writes the enum value.
+`Type` accepts `CreateNew` (`0`) and `UpdateExisting` (`1`). Raw JSON uses the numeric values.
 
 > [!WARNING]
 > Omitting `CustomDefinitionValues` from an update can delete all existing custom definition values. Load them with `GetProject`, preserve every unchanged entry, and send the complete dictionary back.
@@ -101,21 +101,21 @@ The live test installation currently has no configured project custom definition
 | `Project.InternalProjectID` | `GUID` | Yes | Internal identifier of the saved project. |
 | `Project.ProjectID` | `string` | Yes | Human-readable identifier after the save operation. |
 
-SaveProject accepts and returns Protocol Buffers. Raw JSON requests currently return HTTP `500` because the server detects a JSON property-name collision while building metadata for the project entity graph. Use the official WebApiClient or the deployed contracts and `protobuf-net` to serialize `SaveProjectParameter` and deserialize `SaveProjectReturnParameter`.
+SaveProject accepts and returns JSON. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
-On success, `Project` contains the saved server-side representation. The abbreviated object below represents the decoded live response; it is not the raw protobuf HTTP body. All fields except the changed ProjectID are omitted or redacted.
+On success, `project` contains the saved server-side representation. The abbreviated object below represents the JSON live response. All fields except the changed ProjectID are omitted or redacted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true
+	"operationResult": {
+		"detailedMessage": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true
 	},
-	"Project": {
-		"InternalProjectID": "<redacted internal project ID>",
-		"ProjectID": "Aktuellste Demo"
+	"project": {
+		"internalProjectID": "<redacted internal project ID>",
+		"projectID": "Aktuellste Demo"
 	}
 }
 ```

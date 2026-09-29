@@ -9,7 +9,7 @@
 | Method | `POST` |
 | URL | `/api/Project/GetProjects` |
 | Body | JSON `GetProjectsParameter` object |
-| Response | Protocol Buffers (`application/x-protobuf`) |
+| Response | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
 Set `ACCESS_TOKEN` to a valid access token before running the examples. The localhost URL is suitable only for development.
@@ -18,20 +18,21 @@ Set `ACCESS_TOKEN` to a valid access token before running the examples. The loca
 
 This returns project objects for all projects the current user can access.
 
+### Receive the JSON response with curl
+
 ```bash
 curl --request POST "http://localhost:56540/api/Project/GetProjects" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectsContent": [10]
-	}' \
-	--output get-projects-minimum.pb
+	}'
 ```
 
-`ProjectsContent` is the only required request property. Raw JSON requests must use the numeric enum values; `10` means `Projects`.
+`ProjectsContent` is the only required request property. Raw JSON requests use numeric enum values; `10` means `Projects`.
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. Decoding the response with the API contract confirmed a successful operation and 3 project records. The response contained top-level `OperationResult`, `Projects`, and `QueryInfo` fields.
+The response is JSON and is written to standard output. It includes `operationResult` and, when requested, `projects` and `queryInfo`.
 
 ## Common grid request
 
@@ -41,7 +42,7 @@ The project grid in the frontend uses this shape. It requests the project list, 
 curl --request POST "http://localhost:56540/api/Project/GetProjects" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectsContent": [
 			10,
@@ -52,13 +53,12 @@ curl --request POST "http://localhost:56540/api/Project/GetProjects" \
 		"QuerySettings": {
 			"Take": 50
 		}
-	}' \
-	--output get-projects-common.pb
+	}'
 ```
 
 Use `Skip` and `Take` to page through the result set. `QuerySettings` also supports sorting and filtering; use the query model supplied by your API client when those are needed.
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded response reported a successful operation, 3 returned projects, `QueryInfo.RecordsTotal` equal to `3`, and custom-definition entries for all 3 projects. Project identifiers, project data, related person/company data, and custom values were not included in this guide.
+Live validation returned HTTP `200` with content type `application/json`. The response reported a successful operation, 6 returned projects, `queryInfo.recordsTotal` equal to `6`, and custom-definition entries for all 6 projects. Project identifiers, project data, related person/company data, and custom values were not included in this guide.
 
 ## Request properties
 
@@ -107,37 +107,37 @@ Choose only the `ProjectsContent` values needed by the caller:
 | `Data` | `string` | Yes | Legacy DevExpress grid JSON, selected by `TableData` (`50`). The current implementation does not populate it. |
 | `SysCodes` | `SysCodeItemWebDto[]` | Yes | Localized system-code values, selected by `SysCodes` (`70`). |
 
-The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which requests `application/x-protobuf` and deserializes `GetProjectsReturnParameter`.
+Set `Accept: application/json` to receive the response as JSON. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
 The response shape varies with `ProjectsContent`; the common request populates `Projects`, `CustomDefinitionValues`, and `QueryInfo`. `PersonsAndCompanies` and `IsFavorite` add data to the returned project objects rather than separate top-level properties.
 
-The abbreviated object below is the decoded response from the current one-record common request, not the raw protobuf HTTP body. The returned custom-property name and value are redacted; installation-specific project fields are omitted.
+The abbreviated object below is the JSON response from the current one-record common request. The returned custom-property name and value are redacted; installation-specific project fields are omitted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"Exception": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true,
-		"ThrowException": false,
-		"TranslatorTerm": null
+	"operationResult": {
+		"detailedMessage": null,
+		"exception": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true,
+		"throwException": false,
+		"translatorTerm": null
 	},
-	"Projects": [
+	"projects": [
 		{
-			"InternalProjectID": "9897f980-1b7d-ed11-81d0-f2b3bff92a45",
-			"ProjectID": "Aktuellste Demo",
-			"Description": "Aktuelle Demo",
-			"IsFavorite": true
+			"internalProjectID": "9897f980-1b7d-ed11-81d0-f2b3bff92a45",
+			"projectID": "Aktuellste Demo",
+			"description": "Aktuelle Demo",
+			"isFavorite": true
 		}
 	],
-	"QueryInfo": {
-		"RecordsTotal": 3,
-		"SelectedItemAtIndex": null,
-		"SelectedItemAtPage": null
+	"queryInfo": {
+		"recordsTotal": 3,
+		"selectedItemAtIndex": null,
+		"selectedItemAtPage": null
 	},
-	"CustomDefinitionValues": {
+	"customDefinitionValues": {
 		"9897f980-1b7d-ed11-81d0-f2b3bff92a45": {
 			"<redacted custom property name>": "<redacted SerializableObject>"
 		}
@@ -145,9 +145,7 @@ The abbreviated object below is the decoded response from the current one-record
 }
 ```
 
-Requesting `application/json` currently returns HTTP `500` for both examples because the server detects a JSON property-name collision in the project entity graph. Do not omit the protobuf `Accept` header until that server-side serialization issue is fixed.
-
-For paged requests, read `QueryInfo.RecordsTotal` after protobuf deserialization to determine the total number of matching projects.
+For paged requests, read `queryInfo.recordsTotal` to determine the total number of matching projects.
 
 ## Errors
 
