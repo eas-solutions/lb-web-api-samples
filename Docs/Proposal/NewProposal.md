@@ -9,7 +9,7 @@
 | Method | `POST` |
 | URL | `/api/Proposal/NewProposal` |
 | Body | JSON `NewProposalParameter` object |
-| Response | Protocol Buffers (`application/x-protobuf`) |
+| Response | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
 Set `ACCESS_TOKEN` to a valid access token. The localhost URL is suitable only for development.
@@ -22,18 +22,17 @@ Load a construction-kit header through the API client and use its `MasterStructu
 curl --request POST "http://localhost:56540/api/Proposal/NewProposal" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"CreationMode": 0,
 		"DestinationProjectId": "<internal-project-id>",
 		"ConstructionKitHeader": {
 			"MasterStructureID": "<construction-kit-master-structure-id>"
 		}
-	}' \
-	--output new-proposal.pb
+	}'
 ```
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. Decoding `NewProposalReturnParameter` reported success and returned a proposal with non-empty `InternalProposalID` and `ProposalID`. The complete returned proposal was then sent to `SaveProposal`, which returned HTTP `200` and persisted it.
+Live validation returned HTTP `200` with content type `application/json`. The operation reported success and returned a proposal with non-empty `internalProposalID` and `proposalID`. The complete returned proposal was then sent to `SaveProposal`, which returned HTTP `200` and persisted it.
 
 ## Request properties
 
@@ -57,23 +56,23 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 | `Proposal.InternalProposalID` | `GUID` | Yes | New internal proposal identifier, available on a successful response. |
 | `Proposal.ProposalID` | `string` | Yes | Generated human-readable proposal identifier, available on a successful response. |
 
-This endpoint's entity graph cannot currently be serialized as JSON on the tested server: requesting `application/json` returned HTTP `500` with a JSON-serialization error. Request protobuf as shown above and decode `NewProposalReturnParameter` with `EAS.LeegooBuilder.Web.WebApiClient` or the deployed protobuf contract.
+Set `Accept: application/json` to receive the response as JSON. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
-The abbreviated object below is a decoded live response, not the raw HTTP body. Generated identifiers and installation-specific fields are redacted.
+The abbreviated object below is a JSON live response. Generated identifiers and installation-specific fields are redacted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true
+	"operationResult": {
+		"detailedMessage": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true
 	},
-	"Proposal": {
-		"InternalProposalID": "<redacted internal proposal ID>",
-		"ProposalID": "<redacted generated proposal ID>"
+	"proposal": {
+		"internalProposalID": "<redacted internal proposal ID>",
+		"proposalID": "<redacted generated proposal ID>"
 	}
 }
 ```
 
-Do not construct a partial `Proposal` to save. Preserve the complete decoded result and send it to `SaveProposal`.
+Do not construct a partial `Proposal` to save. Preserve the complete JSON result and send it to `SaveProposal`.

@@ -9,7 +9,7 @@
 | Method | `POST` |
 | URL | `/api/Project/GetProject` |
 | Body | JSON `GetProjectParameter` object |
-| Response | Protocol Buffers (`application/x-protobuf`) |
+| Response | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
 Set `ACCESS_TOKEN` to a valid access token and replace `<internal-project-id>` with an `InternalProjectID` returned by `GetProjects`. The localhost URL is suitable only for development.
@@ -22,16 +22,15 @@ This returns the project without explicitly requesting related companies, person
 curl --request POST "http://localhost:56540/api/Project/GetProject" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectId": "<internal-project-id>"
-	}' \
-	--output get-project-minimum.pb
+	}'
 ```
 
 Both include flags default to `false` when omitted from JSON.
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded operation was successful, the requested project was returned, and `CustomDefinitionValues` was `null`.
+Live validation returned HTTP `200` with content type `application/json`. The operation was successful, the requested project was returned, and `customDefinitionValues` was `null`.
 
 ## Common editor request
 
@@ -41,16 +40,15 @@ The project editor loads related people and companies plus custom fields. Custom
 curl --request POST "http://localhost:56540/api/Project/GetProject" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectId": "<internal-project-id>",
 		"IncludeCompaniesAndPersons": true,
 		"IncludeCustomDefinitionValues": true
-	}' \
-	--output get-project-common.pb
+	}'
 ```
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. The decoded operation was successful and returned the requested project plus one custom-definition entry. The returned internal ID was then used in a successful `SaveProject` request, and a follow-up `GetProject` confirmed the saved ProjectID.
+Live validation returned HTTP `200` with content type `application/json`. The operation was successful and returned the requested project plus one custom-definition entry. The returned internal ID was then used in a successful `SaveProject` request, and a follow-up `GetProject` confirmed the saved ProjectID.
 
 ## Request properties
 
@@ -70,33 +68,31 @@ Live validation returned HTTP `200` with content type `application/x-protobuf`. 
 | `Project.ProjectID` | `string` | Yes | Human-readable project identifier. |
 | `CustomDefinitionValues` | `Dictionary<string, SerializableObject>` | Yes | Custom values keyed by custom-property name. Populated only when `IncludeCustomDefinitionValues` is `true`; otherwise `null`. |
 
-The supported response format for this endpoint is Protocol Buffers. Save curl's response to a `.pb` file as shown above, or use `EAS.LeegooBuilder.Web.WebApiClient`, which deserializes `GetProjectReturnParameter`.
+Set `Accept: application/json` to receive the response as JSON. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
 When custom values were requested, merge `CustomDefinitionValues` into your editing model by property name if needed.
 
-The abbreviated object below represents the decoded common response from the live test. It is not the raw HTTP body; the raw body is protobuf. The internal ID, remaining project fields, related records, custom property name, and custom value are redacted.
+The abbreviated object below represents the JSON common response from the live test. The internal ID, remaining project fields, related records, custom property name, and custom value are redacted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true
+	"operationResult": {
+		"detailedMessage": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true
 	},
-	"Project": {
-		"InternalProjectID": "<redacted internal project ID>",
-		"ProjectID": "Aktuellste Demo"
+	"project": {
+		"internalProjectID": "<redacted internal project ID>",
+		"projectID": "Aktuellste Demo"
 	},
-	"CustomDefinitionValues": {
+	"customDefinitionValues": {
 		"<redacted custom property name>": "<redacted SerializableObject>"
 	}
 }
 ```
 
 Each populated `CustomDefinitionValues` entry is a `SerializableObject`, not a plain JSON value. Preserve these objects unchanged when a custom field is not edited. Project fields depend on the installation's project schema.
-
-Requesting `application/json` for a project response currently returns HTTP `500` because the server detects a JSON property-name collision in the project entity graph. Do not omit the protobuf `Accept` header until that server-side serialization issue is fixed.
 
 ## Errors
 

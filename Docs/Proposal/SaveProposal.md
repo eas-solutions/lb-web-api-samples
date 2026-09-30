@@ -8,26 +8,26 @@
 | --- | --- |
 | Method | `POST` |
 | URL | `/api/Proposal/SaveProposal` |
-| Body | Protocol Buffers `SaveProposalParameter` object |
-| Response | Protocol Buffers (`application/x-protobuf`) |
+| Body | JSON `SaveProposalParameter` object |
+| Response | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
-The localhost URL is suitable only for development. JSON requests and responses cannot serialize the full proposal entity graph on the tested server; use the deployed contracts or `EAS.LeegooBuilder.Web.WebApiClient` to serialize and deserialize Protocol Buffers.
+The localhost URL is suitable only for development. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
 ## Save a returned proposal
 
-Deserialize `new-proposal.pb` from `NewProposal`, construct `SaveProposalParameter` with its complete `Proposal`, set both include flags to `false`, and serialize it as `save-proposal-request.pb`. Then send this tested curl request:
+Save the complete `proposal` returned by `NewProposal` in a `SaveProposalParameter`, set both include flags to `false`, and write it to `save-proposal-request.json`. Then send this tested curl request:
 
 ```bash
 curl --request POST "http://localhost:56540/api/Proposal/SaveProposal" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
-	--header "Content-Type: application/x-protobuf" \
-	--header "Accept: application/x-protobuf" \
-	--data-binary @save-proposal-request.pb \
-	--output save-proposal-response.pb
+	--header "Content-Type: application/json" \
+	--header "Accept: application/json" \
+	--data @save-proposal-request.json \
+	--output save-proposal-response.json
 ```
 
-Live validation returned HTTP `200` with content type `application/x-protobuf`. Decoding `SaveProposalReturnParameter` reported success and returned the saved proposal. A subsequent `GetProposal` returned HTTP `200` and the same internal proposal ID.
+Live validation returned HTTP `200` with content type `application/json`. The operation reported success and returned the saved proposal. A subsequent `GetProposal` returned HTTP `200` and the same internal proposal ID.
 
 ## Saving custom values
 
@@ -47,7 +47,7 @@ var save = new SaveProposalParameter(getProposal.Proposal)
 };
 ```
 
-Serialize the complete `save` object as protobuf and send it with the curl request above. With `IncludeCustomDefinitionValues: true`, entries from an existing dictionary that are not present in `CustomDefinitionValues` are deleted. Preserve unchanged entries. Arbitrary keys do not create definitions or values.
+Save the complete `save` object as JSON and send it with the curl request above. With `IncludeCustomDefinitionValues: true`, entries from an existing dictionary that are not present in `CustomDefinitionValues` are deleted. Preserve unchanged entries. Arbitrary keys do not create definitions or values.
 
 The live test installation currently has no configured proposal custom definitions, so this workflow could not add a proposal custom value there.
 
@@ -69,19 +69,19 @@ The live test installation currently has no configured proposal custom definitio
 | `Proposal.InternalProposalID` | `GUID` | Yes | Internal identifier of the saved proposal. |
 | `Proposal.ProposalID` | `string` | Yes | Human-readable identifier after the save operation. |
 
-The abbreviated object below is a decoded protobuf response from the live test, not raw JSON. IDs and installation-specific proposal fields are redacted.
+The abbreviated object below is a JSON response from the live test. IDs and installation-specific proposal fields are redacted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true
+	"operationResult": {
+		"detailedMessage": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true
 	},
-	"Proposal": {
-		"InternalProposalID": "<redacted internal proposal ID>",
-		"ProposalID": "<redacted generated proposal ID>"
+	"proposal": {
+		"internalProposalID": "<redacted internal proposal ID>",
+		"proposalID": "<redacted generated proposal ID>"
 	}
 }
 ```

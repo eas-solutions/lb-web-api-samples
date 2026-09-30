@@ -30,3 +30,24 @@ This directory contains practical documentation for the LEEGOO BUILDER Web API. 
 ## Custom Definition Endpoints
 
 - [GetCustomDefinitionsInfos](CustomDefinition/GetCustomDefinitionsInfos.md): List configured custom fields for an entity type.
+
+## Using Examples in Windows PowerShell
+
+Examples labelled `bash` use the Unix `curl` command and the `\` line-continuation character. In Windows PowerShell, `curl` is an alias for `Invoke-WebRequest`, so pasting those examples directly produces parameter and parsing errors. This is expected and does not indicate an API error.
+
+To call the actual curl executable, use `curl.exe` and replace each Bash `\` continuation with a PowerShell backtick (`` ` ``):
+
+```powershell
+curl.exe --request POST "http://localhost:56540/api/Authentication/Login" `
+	--header "Content-Type: application/json" `
+	--data '{
+		"Username": "Administrator",
+		"UnencryptedPassword": "admin",
+		"Language": "en-GB",
+		"Culture": "en-GB"
+	}'
+```
+
+Do not add spaces after a continuation backtick; PowerShell requires it to be the final character on its line.
+
+If an error names `Invoke-WebRequest`, PowerShell received `curl` rather than `curl.exe`. Check that the first word of the command is exactly `curl.exe` and rerun the example.

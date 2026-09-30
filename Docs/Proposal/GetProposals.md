@@ -9,7 +9,7 @@
 | Method | `POST` |
 | URL | `/api/Proposal/GetProposals` |
 | Body | JSON `GetProposalsParameter` object |
-| Response | Protocol Buffers (`application/x-protobuf`) |
+| Response | JSON (`application/json`) |
 | Authentication | `Authorization: Bearer <access-token>` |
 
 Set `ACCESS_TOKEN` to a valid access token and replace `<internal-project-id>` with a project's `InternalProjectID`. The localhost URL is suitable only for development.
@@ -22,16 +22,15 @@ This loads proposal objects for one project.
 curl --request POST "http://localhost:56540/api/Proposal/GetProposals" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectId": "<internal-project-id>",
 		"Content": [20],
 		"LoadOptions": [10]
-	}' \
-	--output get-proposals-minimum.pb
+	}'
 ```
 
-Live validation returned HTTP `200` with a successful decoded operation. The response included the validation proposals saved in the selected project.
+Live validation returned HTTP `200` with a successful JSON operation. The response included the validation proposals saved in the selected project.
 
 ## Common grid request
 
@@ -41,7 +40,7 @@ The frontend proposal grid requests proposals, custom values, related people and
 curl --request POST "http://localhost:56540/api/Proposal/GetProposals" \
 	--header "Authorization: Bearer ${ACCESS_TOKEN}" \
 	--header "Content-Type: application/json" \
-	--header "Accept: application/x-protobuf" \
+	--header "Accept: application/json" \
 	--data '{
 		"ProjectId": "<internal-project-id>",
 		"Content": [20, 40, 70, 80],
@@ -49,11 +48,10 @@ curl --request POST "http://localhost:56540/api/Proposal/GetProposals" \
 		"QuerySettings": {
 			"Take": 50
 		}
-	}' \
-	--output get-proposals-common.pb
+	}'
 ```
 
-Live validation returned HTTP `200` with a successful decoded operation and listed the saved test proposal. `QueryInfo` supplies the total record count for paged calls.
+Live validation returned HTTP `200` with a successful JSON operation and listed the saved test proposal. `queryInfo` supplies the total record count for paged calls.
 
 ## Request properties
 
@@ -93,22 +91,22 @@ Live validation returned HTTP `200` with a successful decoded operation and list
 | `SystemViewWeb` | `SystemViewWebDto[]` | Yes | Proposal-grid metadata, selected by `Content: SystemViews` (`50`). |
 | `Data` | `string` | Yes | Legacy DevExpress grid JSON, selected by `Content: TableData` (`60`). |
 
-Requesting `application/json` returned HTTP `500` with a JSON-serialization error on the tested server. Use protobuf and decode `GetProposalsReturnParameter`.
+Set `Accept: application/json` to receive the response as JSON. JSON property names use camel case, while the C# contract property names in this guide use Pascal case.
 
-The following is an abbreviated decoded live response. IDs, project data, people, companies, and custom values are redacted.
+The following is an abbreviated JSON live response. IDs, project data, people, companies, and custom values are redacted.
 
 ```json
 {
-	"OperationResult": {
-		"DetailedMessage": null,
-		"OperationFailType": 0,
-		"ShortMessage": null,
-		"Successful": true
+	"operationResult": {
+		"detailedMessage": null,
+		"operationFailType": 0,
+		"shortMessage": null,
+		"successful": true
 	},
-	"Proposals": [
+	"proposals": [
 		{
-			"InternalProposalID": "<redacted internal proposal ID>",
-			"ProposalID": "<redacted generated proposal ID>"
+			"internalProposalID": "<redacted internal proposal ID>",
+			"proposalID": "<redacted generated proposal ID>"
 		}
 	]
 }
