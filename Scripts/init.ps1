@@ -44,6 +44,10 @@ if ($connectionSettings -is [System.Collections.IDictionary]) {
 
 if ([string]::IsNullOrWhiteSpace($existingConnectionString)) {
     $connectionString = Read-Host 'Connection string for the Web API Host (leave blank to skip)'
+    if ($null -ne $connectionString) {
+        $connectionString = $connectionString.Trim().Trim([char[]]@('"', "'"))
+    }
+
     if (-not [string]::IsNullOrWhiteSpace($connectionString)) {
         if ($connectionSettings -isnot [System.Collections.IDictionary]) {
             $connectionSettings = @{}

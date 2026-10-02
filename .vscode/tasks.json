@@ -93,7 +93,7 @@
                 "-ExecutionPolicy",
                 "Bypass",
                 "-File",
-                "${workspaceFolder}/Scripts/run.ps1",
+                "${workspaceFolder}/lb-web/Scripts/run.ps1",
                 "-Project",
                 "API"
             ],
