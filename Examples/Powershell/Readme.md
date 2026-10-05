@@ -77,7 +77,7 @@ Pass the parameter explicitly (for example from a previous API response in `$LbA
 Each directly run sample stores the final API response in `$LbApiOutput` and its serialized JSON in `$LbApiOutputJSON`. Failed API results are printed in red.
 
 ## Authentication
-`ImportAndLogin.ps1` owns the connection settings. Every other script accepts the same six connection parameters and forwards only the ones you passed to `ImportAndLogin.ps1`.
+`ImportAndLogin.ps1` owns the six connection settings. Authenticated samples accept all six and forward only the ones you pass; the unauthenticated `Basics/100.LoadLoginInfos.ps1` accepts only `DllPath` and `ApiUrl`.
 
 ### Authentication parameters
 
