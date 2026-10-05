@@ -1,5 +1,39 @@
 # PowerShell examples
 
+## Table of contents
+
+- [Recommendation](#recommendation)
+- [Preparation](#preparation)
+- [Session variables and parameters](#session-variables-and-parameters)
+- [Authentication](#authentication)
+  - [Authentication parameters](#authentication-parameters)
+- [Basics](#basics)
+  - [Load Login Infos](#load-login-infos)
+- [Projects and proposals](#projects-and-proposals)
+  - [Load Projects](#load-projects)
+  - [Load Proposals](#load-proposals)
+  - [Load Project](#load-project)
+  - [Load Proposal](#load-proposal)
+- [Companies and persons](#companies-and-persons)
+  - [Load Company](#load-company)
+  - [Load Companies](#load-companies)
+  - [Create Company](#create-company)
+  - [Modify Company](#modify-company)
+  - [Load Person](#load-person)
+  - [Load Persons](#load-persons)
+  - [Create Person](#create-person)
+  - [Modify Person](#modify-person)
+- [Import and export](#import-and-export)
+  - [Import Proposal](#import-proposal)
+  - [Export Proposal](#export-proposal)
+  - [Export Project](#export-project)
+- [Scripting](#scripting)
+  - [Execute Custom Script](#execute-custom-script)
+- [Chaining examples](#chaining-examples)
+  - [Modify a person from a load result](#modify-a-person-from-a-load-result)
+  - [Modify a company via JSON](#modify-a-company-via-json)
+  - [Load a project after searching by name](#load-a-project-after-searching-by-name)
+
 ## Recommendation
 
 The easiest way to try out the PowerShell examples is [Visual Studio Code](https://code.visualstudio.com/). Here you can start the scripts easily, debug them, and additionally there is some IntelliSense.
@@ -26,18 +60,18 @@ Many parameters are optional. For those, `Resolve-LbSessionValue` (in `Helpers/L
 
 This rule applies to connection settings, filters such as `Name` / `CompanyName`, file paths, and similar optional inputs. It does **not** apply to mandatory parameters.
 
-### Mandatory internal IDs
+### Mandatory parameters
 
-These parameters are **required** on the command line (`[Parameter(Mandatory = $true)]`). They are **not** resolved from session variables and have **no** hardcoded GUID fallbacks in the scripts:
+These parameters are **required** on the command line. They are **not** resolved from session variables and have **no** hardcoded fallbacks in the scripts:
 
 | Parameter | Scripts |
 | --- | --- |
 | `InternalCompanyID` | `300.LoadCompany.ps1`, `410.LoadPersons.ps1`, `450.CreatePerson.ps1`; `360.ModifyCompany.ps1` when `-Company` is not used |
 | `InternalPersonID` | `400.LoadPerson.ps1`; `460.ModifyPerson.ps1` when `-Person` is not used |
-| `InternalProjectID` | `220.LoadProject.ps1`, `430.ExportProject.ps1` |
-| `InternalProposalID` | `230.LoadProposal.ps1`, `420.ExportProposal.ps1` |
+| `InternalProjectID` | `220.LoadProject.ps1`, `530.ExportProject.ps1` |
+| `InternalProposalID` | `230.LoadProposal.ps1`, `520.ExportProposal.ps1` |
 
-Pass the GUID explicitly (for example from a previous API response in `$LbApiOutput`, as in the [chaining examples](#chaining-examples)). Variables such as `$LbInternalCompanyID` are not used by these samples.
+Pass the parameter explicitly (for example from a previous API response in `$LbApiOutput`, as in the [chaining examples](#chaining-examples)). Variables such as `$LbInternalCompanyID` are not used by these samples.
 
 ### Output
 Each directly run sample stores the final API response in `$LbApiOutput` and its serialized JSON in `$LbApiOutputJSON`. Failed API results are printed in red.
@@ -261,7 +295,7 @@ Pass either `Person` or `InternalPersonID` (not both).
 
 ### Import Proposal
 
-The script `ImportExport/410.ImportProposal.ps1` reads a `.leegoo` file from disk and imports it.
+The script `ImportExport/510.ImportProposal.ps1` reads a `.leegoo` file from disk and imports it.
 
 **Called API endpoint**: `api/ImportExport/ImportProposals`
 
@@ -276,7 +310,7 @@ The script `ImportExport/410.ImportProposal.ps1` reads a `.leegoo` file from dis
 
 ### Export Proposal
 
-The script `ImportExport/420.ExportProposal.ps1` exports one proposal and writes the file bytes to disk.
+The script `ImportExport/520.ExportProposal.ps1` exports one proposal and writes the file bytes to disk.
 
 **Called API endpoint**: `api/ImportExport/ExportProposals`
 
@@ -291,7 +325,7 @@ The script `ImportExport/420.ExportProposal.ps1` exports one proposal and writes
 
 ### Export Project
 
-The script `ImportExport/430.ExportProject.ps1` exports proposals for a project (`AddBaseData = true`) and writes the file bytes to disk.
+The script `ImportExport/530.ExportProject.ps1` exports proposals for a project (`AddBaseData = true`) and writes the file bytes to disk.
 
 **Called API endpoint**: `api/ImportExport/ExportProposalsByProjectId`
 
