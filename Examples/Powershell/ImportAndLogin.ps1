@@ -12,24 +12,25 @@ try {
     . (Join-Path $PSScriptRoot 'Helpers\Lb-Session.ps1')
     . (Join-Path $PSScriptRoot 'Helpers\Write-LbApiResult.ps1')
 
-    $previousApiUrl = if (Get-Variable -Scope Global -Name LbApiUrl -ErrorAction SilentlyContinue) { $global:LbApiUrl } else { $null }
-    $previousUsername = if (Get-Variable -Scope Global -Name LbUsername -ErrorAction SilentlyContinue) { $global:LbUsername } else { $null }
-    $previousPassword = if (Get-Variable -Scope Global -Name LbPassword -ErrorAction SilentlyContinue) { $global:LbPassword } else { $null }
+    $defaultDllPath = Join-Path $PSScriptRoot '..\..\lb-web\Bin\Client'
+    $defaultApiUrl = 'http://localhost:56540/api/'
+    $defaultUsername = 'Administrator'
+    $defaultPassword = 'admin'
+    $defaultCulture = 'de-DE'
+    $defaultLanguage = 'de-DE'
 
-    $resolvedDllPath = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'DllPath' -VariableName 'LbDllPath' -Fallback (Join-Path $PSScriptRoot '..\..\lb-web\Bin\Client')
-    $resolvedApiUrl = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'ApiUrl' -VariableName 'LbApiUrl' -Fallback 'http://localhost:56540/api/'
-    $resolvedUsername = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Username' -VariableName 'LbUsername' -Fallback 'Administrator'
-    $resolvedPassword = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Password' -VariableName 'LbPassword' -Fallback 'admin'
-    $resolvedCulture = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Culture' -VariableName 'LbCulture' -Fallback 'de-DE'
-    $resolvedLanguage = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Language' -VariableName 'LbLanguage' -Fallback 'de-DE'
+    $previousApiUrl = if (Get-Variable -Scope Global -Name LbApiUrl -ErrorAction SilentlyContinue) { $global:LbApiUrl } else { $defaultApiUrl }
+    $previousUsername = if (Get-Variable -Scope Global -Name LbUsername -ErrorAction SilentlyContinue) { $global:LbUsername } else { $defaultUsername }
+    $previousPassword = if (Get-Variable -Scope Global -Name LbPassword -ErrorAction SilentlyContinue) { $global:LbPassword } else { $defaultPassword }
 
-    if ($PSBoundParameters.ContainsKey('ApiUrl') -and $null -ne $previousApiUrl -and $PSBoundParameters['ApiUrl'] -ne $previousApiUrl) {
-        $global:LbAccessToken = $null
-    }
-    if ($PSBoundParameters.ContainsKey('Username') -and $null -ne $previousUsername -and $PSBoundParameters['Username'] -ne $previousUsername) {
-        $global:LbAccessToken = $null
-    }
-    if ($PSBoundParameters.ContainsKey('Password') -and $null -ne $previousPassword -and $PSBoundParameters['Password'] -ne $previousPassword) {
+    $resolvedDllPath = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'DllPath' -VariableName 'LbDllPath' -Fallback $defaultDllPath
+    $resolvedApiUrl = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'ApiUrl' -VariableName 'LbApiUrl' -Fallback $defaultApiUrl
+    $resolvedUsername = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Username' -VariableName 'LbUsername' -Fallback $defaultUsername
+    $resolvedPassword = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Password' -VariableName 'LbPassword' -Fallback $defaultPassword
+    $resolvedCulture = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Culture' -VariableName 'LbCulture' -Fallback $defaultCulture
+    $resolvedLanguage = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Language' -VariableName 'LbLanguage' -Fallback $defaultLanguage
+
+    if ($resolvedApiUrl -ne $previousApiUrl -or $resolvedUsername -ne $previousUsername -or $resolvedPassword -ne $previousPassword) {
         $global:LbAccessToken = $null
     }
 
