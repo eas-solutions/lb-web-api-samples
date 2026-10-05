@@ -11,12 +11,6 @@ This directory contains Python examples for interacting with the LeegooBuilder W
 pip install -r requirements.txt
 ```
 
-For running tests, install development dependencies:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
 ## Configuration
 
 Copy [Examples/Python/config.example.json](Examples/Python/config.example.json) to `config.json` in this directory:

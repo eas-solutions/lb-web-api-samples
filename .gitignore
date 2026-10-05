@@ -421,4 +421,3 @@ FodyWeavers.xsd
 # ---> Python Web API Samples
 Examples/Python/config.json
 Examples/Python/.token_cache.json
-.pytest_cache/
