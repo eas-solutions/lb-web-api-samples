@@ -125,7 +125,7 @@ function Write-LbApiResult {
                 return Get-LbJsonStringLiteral -Value $Value.ToString() -Indent $Indent
             }
 
-            return $Value.ToString()
+            return ($Value | ConvertTo-Json -Compress)
         }
 
         $properties = Get-LbReadableProperties -Type $valueType
