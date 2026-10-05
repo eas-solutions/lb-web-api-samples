@@ -1,0 +1,7 @@
+{
+  "apiUrl": "http://localhost:56540/api",
+  "username": "Administrator",
+  "password": "admin",
+  "language": "en-GB",
+  "culture": "en-GB"
+}
