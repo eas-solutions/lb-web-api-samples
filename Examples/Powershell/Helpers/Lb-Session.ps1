@@ -35,8 +35,13 @@ function Resolve-LbSessionValue {
 
     if ($null -ne $BoundParameters -and $BoundParameters.ContainsKey($ParameterName)) {
         $value = $BoundParameters[$ParameterName]
-        Set-Variable -Name $VariableName -Value $value -Scope Global
-        return $value
+        if (($null -eq $value) -or ($value -is [string] -and [string]::IsNullOrWhiteSpace($value))) {
+            Remove-Variable -Name $VariableName -Scope Global -ErrorAction SilentlyContinue
+        }
+        else {
+            Set-Variable -Name $VariableName -Value $value -Scope Global
+            return $value
+        }
     }
 
     if (Get-Variable -Scope Global -Name $VariableName -ErrorAction SilentlyContinue) {
@@ -47,7 +52,6 @@ function Resolve-LbSessionValue {
         return $null
     }
 
-    Set-Variable -Name $VariableName -Value $Fallback -Scope Global
     return $Fallback
 }
 

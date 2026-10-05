@@ -14,7 +14,7 @@ try {
     . (Join-Path $PSScriptRoot '..\Helpers\Write-LbApiResult.ps1')
 
     $nameFilter = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'Name' -VariableName 'LbProjectName' -NoFallback
-    $applyNameFilter = -not [string]::IsNullOrWhiteSpace($nameFilter)
+    $applyNameFilter = $null -ne $nameFilter
 
     $connectionSplat = Get-LbConnectionSplat -BoundParameters $PSBoundParameters
     $apiClient = & (Join-Path $PSScriptRoot '..\ImportAndLogin.ps1') @connectionSplat

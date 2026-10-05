@@ -20,11 +20,11 @@ The client DLLs use protobuf on the wire. Each sample prints JSON by serializing
 
 Many parameters are optional. For those, `Resolve-LbSessionValue` (in `Helpers/Lb-Session.ps1`) applies this precedence:
 
-1. If the parameter was provided on the command line, that value is stored in the global session variable (an explicit empty string counts as provided).
+1. If the parameter was provided on the command line with a non-empty value, that value is stored in the global session variable and returned. An explicit empty or whitespace-only string clears the session variable and resolution continues with rules 2–3 (for example `-Name ''` clears `$LbProjectName`; with no fallback, the result is `$null` and no name filter is applied).
 2. If the parameter was omitted and the session variable already exists, the variable value is used.
-3. If the variable does not exist, the script-specific default documented below is used and stored in the variable.
+3. If the variable does not exist, the script-specific default documented below is returned for this call. Fallback values are not written to the session variable (only values you provide explicitly are stored).
 
-This rule applies to connection settings, filters such as `Name` / `CompanyName`, file paths, and similar optional inputs. It does **not** apply to internal GUID parameters.
+This rule applies to connection settings, filters such as `Name` / `CompanyName`, file paths, and similar optional inputs. It does **not** apply to mandatory parameters.
 
 ### Mandatory internal IDs
 
@@ -98,7 +98,7 @@ The script `ProjectsProposals/200.LoadProjects.ps1` loads a list of projects. Th
 - `Name` (optional)
     - filters the projects by `Description` using `Contains`
     - [Session variable](#session-variables-and-parameters): `$LbProjectName`
-    - Default value: none (no filter)
+    - Default value: none (no filter); pass an empty string to clear a previously stored name filter
 - [Authentication parameters](#authentication-parameters).
 
 ### Load Proposals
