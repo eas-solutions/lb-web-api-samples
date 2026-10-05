@@ -18,15 +18,26 @@ The client DLLs use protobuf on the wire. Each sample prints JSON by serializing
 
 ## Session variables and parameters
 
-Every script accepts optional parameters. Resolved values are stored in global session variables so later scripts in the same PowerShell session can reuse them.
+Many parameters are optional. For those, `Resolve-LbSessionValue` (in `Helpers/Lb-Session.ps1`) applies this precedence:
 
-Precedence for each value:
-
-1. If the parameter was provided on the command line, that value is stored in the session variable (an explicit empty string counts as provided).
+1. If the parameter was provided on the command line, that value is stored in the global session variable (an explicit empty string counts as provided).
 2. If the parameter was omitted and the session variable already exists, the variable value is used.
-3. If the variable does not exist, the script fallback documented below is used and stored in the variable.
+3. If the variable does not exist, the script-specific default documented below is used and stored in the variable.
 
-Mandatory parameters (for example internal IDs) are not stored in session variables and must be supplied on each call.
+This rule applies to connection settings, filters such as `Name` / `CompanyName`, file paths, and similar optional inputs. It does **not** apply to internal GUID parameters.
+
+### Mandatory internal IDs
+
+These parameters are **required** on the command line (`[Parameter(Mandatory = $true)]`). They are **not** resolved from session variables and have **no** hardcoded GUID fallbacks in the scripts:
+
+| Parameter | Scripts |
+| --- | --- |
+| `InternalCompanyID` | `300.LoadCompany.ps1`, `410.LoadPersons.ps1`, `450.CreatePerson.ps1`; `360.ModifyCompany.ps1` when `-Company` is not used |
+| `InternalPersonID` | `400.LoadPerson.ps1`; `460.ModifyPerson.ps1` when `-Person` is not used |
+| `InternalProjectID` | `220.LoadProject.ps1`, `430.ExportProject.ps1` |
+| `InternalProposalID` | `230.LoadProposal.ps1`, `420.ExportProposal.ps1` |
+
+Pass the GUID explicitly (for example from a previous API response in `$LbApiOutput`, as in the [chaining examples](#chaining-examples)). Variables such as `$LbInternalCompanyID` are not used by these samples.
 
 ### Output
 Each directly run sample stores the final API response in `$LbApiOutput` and its serialized JSON in `$LbApiOutputJSON`. Failed API results are printed in red.

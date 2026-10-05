@@ -1,5 +1,7 @@
 ## Plan: PowerShell Web API Samples
 
+> **Implementation note:** The shipped samples under `Examples/Powershell/` supersede parts of this plan. Internal GUID parameters (`InternalCompanyID`, `InternalPersonID`, `InternalProjectID`, `InternalProposalID`) are **mandatory**; they are not stored in `$LbInternal*` session variables and have no GUID fallbacks. Auto-resolve via `GetProjects` / `GetProposals` was removed from `220` / `230`. See `Examples/Powershell/Readme.md` for the authoritative parameter rules.
+
 Move the whole `Powershell` tree to `Examples/Powershell`, then make every sample share one working-directory restore, one optional-parameter and session-variable rule, one JWT login, and one JSON writer. The client DLLs stay on protobuf. PowerShell serializes the .NET object the client already returned. Do not change the `lb-web` submodule and do not change `WebApiClient` to send or accept JSON.
 
 **Steps**
