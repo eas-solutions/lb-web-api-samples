@@ -61,9 +61,13 @@ The script `Basics/100.LoadLoginInfos.ps1` loads the login infos, containing the
 
 
 #### Parameters
+- `DllPath` (optional)
+    - folder containing the Web API client DLLs
+    - [Session variable](#session-variables-and-parameters): `$LbDllPath` (same as [authentication parameters](#authentication-parameters))
+    - Default value: `lb-web\Bin\Client` under the repository root (resolved relative to this script)
 - `ApiUrl` (optional)
     - base URL of the Web API (including the `api/` segment)
-    - [Session variable](#session-variables-and-parameters): `$LbApiUrl`
+    - [Session variable](#session-variables-and-parameters): `$LbApiUrl` (same as [authentication parameters](#authentication-parameters))
     - Default value: `http://localhost:56540/api/`
 
 > **Note**: This endpoint can be called without authentication.

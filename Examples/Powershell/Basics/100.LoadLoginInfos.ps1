@@ -1,4 +1,5 @@
 param(
+    [string]$DllPath,
     [string]$ApiUrl
 )
 
@@ -7,10 +8,10 @@ try {
     . (Join-Path $PSScriptRoot '..\Helpers\Lb-Session.ps1')
     . (Join-Path $PSScriptRoot '..\Helpers\Write-LbApiResult.ps1')
 
-    $dllPath = Join-Path $PSScriptRoot '..\..\lb-web\Bin\Client'
+    $resolvedDllPath = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'DllPath' -VariableName 'LbDllPath' -Fallback (Join-Path $PSScriptRoot '..\..\..\lb-web\Bin\Client')
     $resolvedApiUrl = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'ApiUrl' -VariableName 'LbApiUrl' -Fallback 'http://localhost:56540/api/'
 
-    Import-LbClientDlls -DllPath $dllPath
+    Import-LbClientDlls -DllPath $resolvedDllPath
 
     $apiClient = New-Object EAS.LeegooBuilder.Web.WebApiClient.WebApiClient -ArgumentList ([Uri]$resolvedApiUrl)
 
