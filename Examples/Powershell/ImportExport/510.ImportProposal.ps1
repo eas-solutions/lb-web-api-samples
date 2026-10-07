@@ -5,6 +5,7 @@ param(
     [string]$Password,
     [string]$Culture,
     [string]$Language,
+    [Parameter(Mandatory = $true)]
     [string]$ProposalFile
 )
 
@@ -15,7 +16,7 @@ try {
 
     $connectionSplat = Get-LbConnectionSplat -BoundParameters $PSBoundParameters
 
-    $resolvedProposalFile = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'ProposalFile' -VariableName 'LbProposalFile' -Fallback 'C:\Temp\ExportedProposal.leegoo'
+    $resolvedProposalFile = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'ProposalFile' -VariableName 'LbProposalFile' -NoFallback
 
     try {
         $proposalBytes = [System.IO.File]::ReadAllBytes($resolvedProposalFile)
