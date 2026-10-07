@@ -417,3 +417,11 @@ FodyWeavers.xsd
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 .idea/
+package-lock.json
+
+# TypeScript samples config and credentials
+lb-config.json
+lb-config.local.json
+.env
+.env.*
+!*.example.json
