@@ -9,8 +9,8 @@ from typing import Any
 
 
 DEFAULT_API_URL = "http://localhost:56540/api/"
-DEFAULT_USERNAME = "Administrator"
-DEFAULT_PASSWORD = "admin"
+DEFAULT_USERNAME = "YourUsername"
+DEFAULT_PASSWORD = "YourPassword"
 DEFAULT_CULTURE = "de-DE"
 DEFAULT_LANGUAGE = "de-DE"
 DEFAULT_TOKEN_CACHE_FILE = ".token_cache.json"
