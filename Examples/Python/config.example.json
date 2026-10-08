@@ -1,0 +1,8 @@
+{
+  "apiUrl": "http://localhost:56540/api/",
+  "username": "YourUsername",
+  "password": "YourPassword",
+  "culture": "de-DE",
+  "language": "de-DE",
+  "tokenCachePath": ".token_cache.json"
+}
