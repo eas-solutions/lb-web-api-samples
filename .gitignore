@@ -418,6 +418,15 @@ FodyWeavers.xsd
 
 .idea/
 
+package-lock.json
+
+# TypeScript samples config and credentials
+lb-config.json
+lb-config.local.json
+.env
+.env.*
+!*.example.json
+
 # ---> Python Web API Samples
 Examples/Python/config.json
 Examples/Python/.token_cache.json
