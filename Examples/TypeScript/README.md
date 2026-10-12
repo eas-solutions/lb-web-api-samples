@@ -25,7 +25,6 @@ All examples use native Node.js 20+ `fetch` and execute directly with `tsx` (`np
   - [Project](#project)
   - [Proposal](#proposal)
   - [Companies and persons](#companies-and-persons)
-- [Verified against demo API](#verified-against-demo-api)
 
 ---
 
@@ -186,10 +185,17 @@ Examples/TypeScript/
 
 ## Sample scripts
 
+Every script accepts the connection and authentication options from [Command-Line Arguments](#2-command-line-arguments) (`--config`, `--api-url`, `--username`, `--password`, `--language`, `--culture`). Each script section below lists script-specific options. Run any script with `-h` or `--help` to print the full option list in the terminal.
+
 ### Authentication
 
 #### Login
 Authenticates using the configured credentials and prints the user profile with the token masked.
+
+| Option | Description |
+| --- | --- |
+| `--show-token` | Display the unmasked bearer token (masked by default) |
+| `-h`, `--help` | Show usage and all options |
 
 ```bash
 # Masked token output (default):
@@ -206,6 +212,13 @@ npx tsx Authentication/Login.ts --show-token
 #### GetProjects
 Retrieves projects accessible to the authenticated user. Supports filtering by description and paging.
 
+| Option | Description |
+| --- | --- |
+| `--name <string>` | Filter projects where `Description` contains the specified text (case-insensitive) |
+| `--take <number>` | Maximum number of records to return |
+| `--skip <number>` | Number of records to skip (paging offset) |
+| `-h`, `--help` | Show usage and all options |
+
 ```bash
 # Retrieve first 5 projects:
 npx tsx Project/GetProjects.ts --take 5
@@ -219,6 +232,13 @@ npx tsx Project/GetProjects.ts --skip 5 --take 5
 
 #### GetProject
 Retrieves full details for a single project by its internal GUID.
+
+| Option | Description |
+| --- | --- |
+| `--internal-project-id <GUID>` | **Required.** Internal project GUID |
+| `--include-companies-and-persons` | Include related company and person records |
+| `--include-custom-definition-values` | Include custom field definitions and values |
+| `-h`, `--help` | Show usage and all options |
 
 ```bash
 npx tsx Project/GetProject.ts --internal-project-id 9897f980-1b7d-ed11-81d0-f2b3bff92a45
@@ -237,6 +257,13 @@ npx tsx Project/GetProject.ts \
 #### GetProposals
 Retrieves proposals associated with a specific project.
 
+| Option | Description |
+| --- | --- |
+| `--internal-project-id <GUID>` | **Required.** Internal project GUID |
+| `--take <number>` | Maximum number of records to return |
+| `--skip <number>` | Number of records to skip (paging offset) |
+| `-h`, `--help` | Show usage and all options |
+
 ```bash
 npx tsx Proposal/GetProposals.ts --internal-project-id 9897f980-1b7d-ed11-81d0-f2b3bff92a45
 
@@ -248,6 +275,13 @@ npx tsx Proposal/GetProposals.ts \
 
 #### GetProposal
 Retrieves a single proposal by its internal GUID.
+
+| Option | Description |
+| --- | --- |
+| `--internal-proposal-id <GUID>` | **Required.** Internal proposal GUID |
+| `--include-custom-definition-values` | Include custom field definitions and values |
+| `--include-companies-and-persons` | Include related company and person records |
+| `-h`, `--help` | Show usage and all options |
 
 ```bash
 npx tsx Proposal/GetProposal.ts --internal-proposal-id 68cac5d3-1c7d-ed11-81d0-f2b3bff92a45
@@ -266,6 +300,14 @@ npx tsx Proposal/GetProposal.ts \
 #### LoadCompanies
 Queries companies with optional filters for company name, company ID, and paging.
 
+| Option | Description |
+| --- | --- |
+| `--name <string>` | Filter companies by name |
+| `--company-id <string>` | Filter companies by external/display company identifier |
+| `--take <number>` | Maximum number of records to return |
+| `--skip <number>` | Number of records to skip (paging offset) |
+| `-h`, `--help` | Show usage and all options |
+
 ```bash
 # Load up to 10 companies:
 npx tsx CompaniesAndPersons/LoadCompanies.ts --take 10
@@ -277,6 +319,15 @@ npx tsx CompaniesAndPersons/LoadCompanies.ts --name "EAS"
 #### LoadPersons
 Queries persons with optional filters for internal company ID, person name, active-only flag, and paging.
 
+| Option | Description |
+| --- | --- |
+| `--internal-company-id <GUID>` | Filter persons by internal company GUID |
+| `--name <string>` | Filter persons by name |
+| `--only-active` | Include only active persons |
+| `--take <number>` | Maximum number of records to return |
+| `--skip <number>` | Number of records to skip (paging offset) |
+| `-h`, `--help` | Show usage and all options |
+
 ```bash
 # Load active persons only:
 npx tsx CompaniesAndPersons/LoadPersons.ts --only-active --take 10
@@ -287,6 +338,14 @@ npx tsx CompaniesAndPersons/LoadPersons.ts --internal-company-id 8f5266be-8668-e
 
 #### SaveCompany
 Initializes default values via `POST /api/CompaniesAndPersons/InitCompany` and saves the company with `SaveDataMode.Insert` (10). Also supports `SaveDataMode.Update` (20) when `--internal-company-id` is provided.
+
+| Option | Description |
+| --- | --- |
+| `--name <string>` | Company name (default: `Test Company`) |
+| `--company-id <string>` | External/display `CompanyID` (default: generated with timestamp) |
+| `--internal-company-id <GUID>` | Internal GUID of an existing company to update |
+| `--update` | Use `SaveDataMode.Update` instead of Insert (requires `--internal-company-id`) |
+| `-h`, `--help` | Show usage and all options |
 
 ```bash
 # Create a new company (Insert mode):
@@ -301,6 +360,16 @@ npx tsx CompaniesAndPersons/SaveCompany.ts \
 #### SavePerson
 Initializes defaults for a company via `POST /api/CompaniesAndPersons/InitPerson`, populates person fields, sets `IsActive = 1`, and saves with `SaveDataMode.Insert` (10). Also supports `SaveDataMode.Update` (20) when `--internal-person-id` is provided.
 
+| Option | Description |
+| --- | --- |
+| `--internal-company-id <GUID>` | Internal GUID of the company the person belongs to (**required** for Insert) |
+| `--name <string>` | Person last name (default: `Test Person at <timestamp>`) |
+| `--first-name <string>` | Person first name |
+| `--person-id <string>` | External/display `PersonID` (default: generated with timestamp) |
+| `--internal-person-id <GUID>` | Internal GUID of an existing person to update |
+| `--update` | Use `SaveDataMode.Update` instead of Insert (requires `--internal-person-id`) |
+| `-h`, `--help` | Show usage and all options |
+
 ```bash
 # Create a person under an existing company (Insert mode):
 npx tsx CompaniesAndPersons/SavePerson.ts \
@@ -313,26 +382,3 @@ npx tsx CompaniesAndPersons/SavePerson.ts \
   --internal-person-id <GUID> \
   --first-name "Janet"
 ```
-
----
-
-## Verified against demo API
-
-All sample scripts were verified against the local development instance at `http://localhost:56540` using the standard `Administrator` / `admin` account:
-
-| Script | Command | Result |
-| --- | --- | --- |
-| `Authentication/Login.ts` | `npx tsx Authentication/Login.ts` | HTTP 200, `successful: true`, masked token returned |
-| `Authentication/Login.ts` | `npx tsx Authentication/Login.ts --show-token` | HTTP 200, full unmasked JWT token displayed |
-| `Project/GetProjects.ts` | `npx tsx Project/GetProjects.ts --take 2` | HTTP 200, returned 2 projects, total records reported |
-| `Project/GetProjects.ts` | `npx tsx Project/GetProjects.ts --name "Demobelege"` | HTTP 200, filtered project returned |
-| `Project/GetProject.ts` | `npx tsx Project/GetProject.ts --internal-project-id 9897f980-1b7d-ed11-81d0-f2b3bff92a45` | HTTP 200, returned project details |
-| `Proposal/GetProposals.ts` | `npx tsx Proposal/GetProposals.ts --internal-project-id 9897f980-1b7d-ed11-81d0-f2b3bff92a45` | HTTP 200, returned proposal list |
-| `Proposal/GetProposal.ts` | `npx tsx Proposal/GetProposal.ts --internal-proposal-id 68cac5d3-1c7d-ed11-81d0-f2b3bff92a45` | HTTP 200, returned proposal details |
-| `CompaniesAndPersons/LoadCompanies.ts` | `npx tsx CompaniesAndPersons/LoadCompanies.ts --name "EAS North"` | HTTP 200, returned matched company item |
-| `CompaniesAndPersons/LoadPersons.ts` | `npx tsx CompaniesAndPersons/LoadPersons.ts --only-active --take 2` | HTTP 200, returned 2 active persons |
-| `CompaniesAndPersons/SaveCompany.ts` | `npx tsx CompaniesAndPersons/SaveCompany.ts --name "TS Sample Company"` | HTTP 200, initialized and saved new company (`Insert`) |
-| `CompaniesAndPersons/SaveCompany.ts` | `npx tsx CompaniesAndPersons/SaveCompany.ts --internal-company-id <GUID> --name "TS Sample Company Updated"` | HTTP 200, updated existing company (`Update`) |
-| `CompaniesAndPersons/SavePerson.ts` | `npx tsx CompaniesAndPersons/SavePerson.ts --internal-company-id <GUID> --first-name Alice --name Smith` | HTTP 200, initialized and saved person (`Insert`) |
-| `CompaniesAndPersons/SavePerson.ts` | `npx tsx CompaniesAndPersons/SavePerson.ts --internal-person-id <GUID> --first-name "Alice Updated"` | HTTP 200, updated existing person (`Update`) |
-| Validation / Error Handling | Missing required GUID arguments (`--internal-project-id`, `--internal-company-id`, etc.) | Process exits with code 1 and error message |
