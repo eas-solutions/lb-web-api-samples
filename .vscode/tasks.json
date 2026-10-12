@@ -1,0 +1,144 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build API Client",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/lb-web/Scripts/build.ps1",
+                "-Project",
+                "Client",
+                "-Configuration",
+                "Debug"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "label": "Build Client",
+                    "icon": {
+                        "id": "server-process"
+                    },
+                    "color": "#4ec9b0",
+                    "detail": "Build Web API Client with the quiet wrapper script",
+                    "running": {
+                        "icon": {
+                            "id": "gear~spin"
+                        },
+                        "backgroundColor": "statusBarItem.warningBackground"
+                    }
+                }
+            }
+        },{
+            "label": "Build API",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/lb-web/Scripts/build.ps1",
+                "-Project",
+                "API",
+                "-Configuration",
+                "Debug"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "options": {
+                "statusbar": {
+                    "hide": false,
+                    "label": "Build API",
+                    "icon": {
+                        "id": "server-process"
+                    },
+                    "color": "#4ec9b0",
+                    "detail": "Build Web API with the quiet wrapper script",
+                    "running": {
+                        "icon": {
+                            "id": "gear~spin"
+                        },
+                        "backgroundColor": "statusBarItem.warningBackground"
+                    }
+                }
+            }
+        },
+        {
+            "label": "Run API",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/lb-web/Scripts/run.ps1",
+                "-Project",
+                "API"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "dotnet",
+                "source": "dotnet",
+                "fileLocation": "relative",
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d+|\\d+,\\d+|\\d+,\\d+,\\d+,\\d+)\\):\\s+(error|warning)\\s+(\\w+\\d+)\\s*:\\s*(.*)$",
+                    "file": 1,
+                    "location": 2,
+                    "severity": 3,
+                    "code": 4,
+                    "message": 5
+                }
+            },
+            "options": {
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development",
+                    "DOTNET_ENVIRONMENT": "Development"
+                },
+                "statusbar": {
+                    "hide": false,
+                    "label": "Run API",
+                    "icon": {
+                        "id": "play"
+                    },
+                    "color": "#6dff72",
+                    "detail": "Running Web API (WebApiHost)",
+                    "running": {
+                        "icon": {
+                            "id": "gear~spin"
+                        },
+                        "backgroundColor": "statusBarItem.warningBackground"
+                    }
+                }
+            }
+        },
+    ]
+}
