@@ -7,6 +7,7 @@ param(
     [string]$Language,
     [Parameter(Mandatory = $true)]
     [string]$InternalProposalID,
+    [Parameter(Mandatory = $true)]
     [string]$OutputFile
 )
 
@@ -17,7 +18,7 @@ try {
 
     $connectionSplat = Get-LbConnectionSplat -BoundParameters $PSBoundParameters
 
-    $resolvedOutputFile = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'OutputFile' -VariableName 'LbOutputFile' -Fallback 'C:\Temp\ExportedProposal.leegoo'
+    $resolvedOutputFile = Resolve-LbSessionValue -BoundParameters $PSBoundParameters -ParameterName 'OutputFile' -VariableName 'LbOutputFile' -NoFallback
 
     $apiClient = & (Join-Path $PSScriptRoot '..\ImportAndLogin.ps1') @connectionSplat
     

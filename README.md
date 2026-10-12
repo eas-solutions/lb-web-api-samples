@@ -9,6 +9,9 @@ See [Examples/Powershell/Readme.md](Examples/Powershell/Readme.md) for setup, pa
 ## TypeScript
 
 See [Examples/TypeScript/README.md](Examples/TypeScript/README.md) for Node.js 20+ / TypeScript examples, TokenManager reference, setup, and sample scripts.
+## Python
+
+See [Examples/Python/README.md](Examples/Python/README.md) for setup, configuration, token management, sample scripts, and the projects viewer UI.
 
 ## Documentation
 

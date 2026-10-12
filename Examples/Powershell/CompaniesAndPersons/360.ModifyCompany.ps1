@@ -64,7 +64,23 @@ try {
                 continue
             }
 
-            if ($propertyType.IsValueType -or $propertyType -eq [string]) {
+            if ($propertyType -eq [string]) {
+                $targetProperty.SetValue($Target, $value)
+                continue
+            }
+
+            $underlyingType = [Nullable]::GetUnderlyingType($propertyType)
+            if ($null -eq $underlyingType) {
+                $underlyingType = $propertyType
+            }
+
+            if ($underlyingType.IsPrimitive -or $underlyingType.IsEnum) {
+                $convertedValue = [Convert]::ChangeType($value, $underlyingType)
+                $targetProperty.SetValue($Target, $convertedValue)
+                continue
+            }
+
+            if ($propertyType.IsValueType) {
                 $targetProperty.SetValue($Target, $value)
             }
         }

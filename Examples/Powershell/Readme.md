@@ -302,10 +302,8 @@ The script `ImportExport/510.ImportProposal.ps1` reads a `.leegoo` file from dis
 **Called Method**:       `ImportExportClient.ImportProposalsAsync`
 
 #### Parameters
-- `ProposalFile` (optional)
+- `ProposalFile` (required)
     - path to the `.leegoo` file
-    - [Session variable](#session-variables-and-parameters): `$LbProposalFile`
-    - Default value: `C:\Temp\ExportedProposal.leegoo`
 - [Authentication parameters](#authentication-parameters).
 
 ### Export Proposal
@@ -318,9 +316,8 @@ The script `ImportExport/520.ExportProposal.ps1` exports one proposal and writes
 
 #### Parameters
 - `InternalProposalID` (required)
-- `OutputFile` (optional)
-    - [Session variable](#session-variables-and-parameters): `$LbOutputFile`
-    - Default value: `C:\Temp\ExportedProposal.leegoo`
+- `OutputFile` (required)
+    - path for the exported `.leegoo` file
 - [Authentication parameters](#authentication-parameters).
 
 ### Export Project
@@ -333,9 +330,8 @@ The script `ImportExport/530.ExportProject.ps1` exports proposals for a project 
 
 #### Parameters
 - `InternalProjectID` (required)
-- `OutputFile` (optional)
-    - [Session variable](#session-variables-and-parameters): `$LbOutputFile`
-    - Default value: `C:\Temp\ExportedProposalById.leegoo`
+- `OutputFile` (required)
+    - path for the exported `.leegoo` file
 - [Authentication parameters](#authentication-parameters).
 
 ## Scripting
